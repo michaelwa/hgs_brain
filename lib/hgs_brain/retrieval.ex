@@ -12,6 +12,8 @@ defmodule HgsBrain.Retrieval do
 
   alias HgsBrain.Repo
 
+  @arcana_client Application.compile_env(:hgs_brain, :arcana_client, Arcana)
+
   @type segment :: :work | :personal
 
   @doc """
@@ -22,7 +24,7 @@ defmodule HgsBrain.Retrieval do
   """
   @spec ask(String.t(), segment()) :: {:ok, String.t(), list()} | {:error, term()}
   def ask(question, segment) when is_binary(question) and segment in [:work, :personal] do
-    Arcana.ask(question,
+    @arcana_client.ask(question,
       repo: Repo,
       collection: collection_name(segment)
     )
@@ -37,7 +39,7 @@ defmodule HgsBrain.Retrieval do
   @spec search(String.t(), segment(), keyword()) :: list()
   def search(query, segment, opts \\ [])
       when is_binary(query) and segment in [:work, :personal] do
-    Arcana.search(query,
+    @arcana_client.search(query,
       Keyword.merge(opts,
         repo: Repo,
         collection: collection_name(segment)

@@ -47,4 +47,12 @@ surface:
     - hgs_brain.chat_ui.answer_display
     - hgs_brain.chat_ui.loading_state
     - hgs_brain.chat_ui.mode_selector
+- kind: command
+  target: mix test test/hgs_brain_web/live/chat_live_test.exs
+  covers:
+    - hgs_brain.chat_ui.segment_selector
+    - hgs_brain.chat_ui.question_input
+    - hgs_brain.chat_ui.answer_display
+    - hgs_brain.chat_ui.loading_state
+    - hgs_brain.chat_ui.mode_selector
 ```

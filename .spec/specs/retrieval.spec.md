@@ -40,4 +40,10 @@ decisions:
     - hgs_brain.retrieval.accepts_query
     - hgs_brain.retrieval.scoped
     - hgs_brain.retrieval.rag_answer
+- kind: command
+  target: mix test test/hgs_brain/retrieval_test.exs
+  covers:
+    - hgs_brain.retrieval.accepts_query
+    - hgs_brain.retrieval.scoped
+    - hgs_brain.retrieval.rag_answer
 ```

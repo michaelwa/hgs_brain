@@ -17,6 +17,8 @@ defmodule HgsBrain.Ingestion do
   alias HgsBrain.Repo
   alias Arcana.Document
 
+  @arcana_client Application.compile_env(:hgs_brain, :arcana_client, Arcana)
+
   @type segment :: :work | :personal
 
   @doc """
@@ -32,7 +34,7 @@ defmodule HgsBrain.Ingestion do
     collection = collection_name(segment)
 
     with :ok <- delete_existing(path, collection) do
-      Arcana.ingest_file(path, repo: Repo, collection: collection)
+      @arcana_client.ingest_file(path, repo: Repo, collection: collection)
     end
   end
 
@@ -58,7 +60,7 @@ defmodule HgsBrain.Ingestion do
   """
   @spec delete_document(binary()) :: :ok | {:error, :not_found}
   def delete_document(document_id) do
-    Arcana.delete(document_id, repo: Repo)
+    @arcana_client.delete(document_id, repo: Repo)
   end
 
   defp delete_existing(path, collection) do
@@ -69,7 +71,7 @@ defmodule HgsBrain.Ingestion do
       select: d
     )
     |> Repo.all()
-    |> Enum.each(fn doc -> Arcana.delete(doc.id, repo: Repo) end)
+    |> Enum.each(fn doc -> @arcana_client.delete(doc.id, repo: Repo) end)
 
     :ok
   end

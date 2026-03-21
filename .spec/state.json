@@ -307,6 +307,19 @@
       },
       {
         "covers": [
+          "hgs_brain.chat_ui.segment_selector",
+          "hgs_brain.chat_ui.question_input",
+          "hgs_brain.chat_ui.answer_display",
+          "hgs_brain.chat_ui.loading_state",
+          "hgs_brain.chat_ui.mode_selector"
+        ],
+        "file": ".spec/specs/chat_ui.spec.md",
+        "kind": "command",
+        "subject_id": "hgs_brain.chat_ui",
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs"
+      },
+      {
+        "covers": [
           "hgs_brain.ingestion.accepts_markdown",
           "hgs_brain.ingestion.segment_tagged",
           "hgs_brain.ingestion.embedded",
@@ -319,6 +332,18 @@
       },
       {
         "covers": [
+          "hgs_brain.ingestion.accepts_markdown",
+          "hgs_brain.ingestion.segment_tagged",
+          "hgs_brain.ingestion.embedded",
+          "hgs_brain.ingestion.idempotent"
+        ],
+        "file": ".spec/specs/ingestion.spec.md",
+        "kind": "command",
+        "subject_id": "hgs_brain.ingestion",
+        "target": "mix test test/hgs_brain/ingestion_test.exs"
+      },
+      {
+        "covers": [
           "hgs_brain.retrieval.accepts_query",
           "hgs_brain.retrieval.scoped",
           "hgs_brain.retrieval.rag_answer"
@@ -327,6 +352,17 @@
         "kind": "source_file",
         "subject_id": "hgs_brain.retrieval",
         "target": "lib/hgs_brain/retrieval.ex"
+      },
+      {
+        "covers": [
+          "hgs_brain.retrieval.accepts_query",
+          "hgs_brain.retrieval.scoped",
+          "hgs_brain.retrieval.rag_answer"
+        ],
+        "file": ".spec/specs/retrieval.spec.md",
+        "kind": "command",
+        "subject_id": "hgs_brain.retrieval",
+        "target": "mix test test/hgs_brain/retrieval_test.exs"
       },
       {
         "covers": [
@@ -384,7 +420,7 @@
     "requirements": 19,
     "scenarios": 0,
     "subjects": 5,
-    "verifications": 8
+    "verifications": 11
   },
   "verification": {
     "claims": [
@@ -444,6 +480,61 @@
         "verification_index": 0
       },
       {
+        "cover_id": "hgs_brain.chat_ui.answer_display",
+        "file": ".spec/specs/chat_ui.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "hgs_brain.chat_ui",
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.chat_ui.loading_state",
+        "file": ".spec/specs/chat_ui.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "hgs_brain.chat_ui",
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.chat_ui.mode_selector",
+        "file": ".spec/specs/chat_ui.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "hgs_brain.chat_ui",
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.chat_ui.question_input",
+        "file": ".spec/specs/chat_ui.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "hgs_brain.chat_ui",
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.chat_ui.segment_selector",
+        "file": ".spec/specs/chat_ui.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "hgs_brain.chat_ui",
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 1
+      },
+      {
         "cover_id": "hgs_brain.ingestion.accepts_markdown",
         "file": ".spec/specs/ingestion.spec.md",
         "kind": "source_file",
@@ -488,6 +579,50 @@
         "verification_index": 0
       },
       {
+        "cover_id": "hgs_brain.ingestion.accepts_markdown",
+        "file": ".spec/specs/ingestion.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "hgs_brain.ingestion",
+        "target": "mix test test/hgs_brain/ingestion_test.exs",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.ingestion.embedded",
+        "file": ".spec/specs/ingestion.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "hgs_brain.ingestion",
+        "target": "mix test test/hgs_brain/ingestion_test.exs",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.ingestion.idempotent",
+        "file": ".spec/specs/ingestion.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "hgs_brain.ingestion",
+        "target": "mix test test/hgs_brain/ingestion_test.exs",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.ingestion.segment_tagged",
+        "file": ".spec/specs/ingestion.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "hgs_brain.ingestion",
+        "target": "mix test test/hgs_brain/ingestion_test.exs",
+        "verification_index": 1
+      },
+      {
         "cover_id": "hgs_brain.retrieval.accepts_query",
         "file": ".spec/specs/retrieval.spec.md",
         "kind": "source_file",
@@ -519,6 +654,39 @@
         "subject_id": "hgs_brain.retrieval",
         "target": "lib/hgs_brain/retrieval.ex",
         "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.retrieval.accepts_query",
+        "file": ".spec/specs/retrieval.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "hgs_brain.retrieval",
+        "target": "mix test test/hgs_brain/retrieval_test.exs",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.retrieval.rag_answer",
+        "file": ".spec/specs/retrieval.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "hgs_brain.retrieval",
+        "target": "mix test test/hgs_brain/retrieval_test.exs",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.retrieval.scoped",
+        "file": ".spec/specs/retrieval.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "hgs_brain.retrieval",
+        "target": "mix test test/hgs_brain/retrieval_test.exs",
+        "verification_index": 1
       },
       {
         "cover_id": "spec.workspace.readme_present",
@@ -579,7 +747,7 @@
     "cli_minimum_strength": null,
     "default_minimum_strength": "claimed",
     "strength_summary": {
-      "claimed": 2,
+      "claimed": 14,
       "executed": 0,
       "linked": 15
     },

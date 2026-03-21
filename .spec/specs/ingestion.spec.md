@@ -45,4 +45,11 @@ decisions:
     - hgs_brain.ingestion.segment_tagged
     - hgs_brain.ingestion.embedded
     - hgs_brain.ingestion.idempotent
+- kind: command
+  target: mix test test/hgs_brain/ingestion_test.exs
+  covers:
+    - hgs_brain.ingestion.accepts_markdown
+    - hgs_brain.ingestion.segment_tagged
+    - hgs_brain.ingestion.embedded
+    - hgs_brain.ingestion.idempotent
 ```
