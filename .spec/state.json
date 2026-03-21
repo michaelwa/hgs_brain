@@ -1,0 +1,468 @@
+{
+  "decisions": {
+    "items": [
+      {
+        "affects": [
+          "hgs_brain.ingestion",
+          "hgs_brain.retrieval"
+        ],
+        "date": "2026-03-21",
+        "file": ".spec/decisions/hgs_brain.decision.arcana_for_rag.md",
+        "id": "hgs_brain.decision.arcana_for_rag",
+        "status": "accepted",
+        "title": "Use Arcana for RAG"
+      },
+      {
+        "affects": [
+          "hgs_brain.ingestion",
+          "hgs_brain.retrieval"
+        ],
+        "date": "2026-03-21",
+        "file": ".spec/decisions/hgs_brain.decision.pgvector_storage.md",
+        "id": "hgs_brain.decision.pgvector_storage",
+        "status": "accepted",
+        "title": "Use pgvector via Existing Postgres"
+      }
+    ]
+  },
+  "findings": [],
+  "index": {
+    "exceptions": [
+      {
+        "covers": [
+          "hgs_brain.segmentation",
+          "hgs_brain.markdown_ingestion",
+          "hgs_brain.qa_interface"
+        ],
+        "file": ".spec/specs/package.spec.md",
+        "id": "hgs_brain.package_bootstrap_waiver",
+        "reason": "Package-level requirements are covered by the ingestion and retrieval feature specs. Verification will be added as those features are implemented.",
+        "subject_id": "hgs_brain"
+      }
+    ],
+    "requirements": [
+      {
+        "file": ".spec/specs/package.spec.md",
+        "id": "hgs_brain.markdown_ingestion",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The system shall accept markdown files as knowledge sources and make their content available for retrieval.",
+        "subject_id": "hgs_brain"
+      },
+      {
+        "file": ".spec/specs/package.spec.md",
+        "id": "hgs_brain.qa_interface",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The system shall provide a Q&A interface for asking natural language questions and receiving AI-generated answers from ingested knowledge.",
+        "subject_id": "hgs_brain"
+      },
+      {
+        "file": ".spec/specs/package.spec.md",
+        "id": "hgs_brain.segmentation",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The system shall support work and personal segments, keeping all knowledge and query results scoped to the selected segment.",
+        "subject_id": "hgs_brain"
+      },
+      {
+        "file": ".spec/specs/ingestion.spec.md",
+        "id": "hgs_brain.ingestion.accepts_markdown",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The system shall accept markdown files as input for ingestion.",
+        "subject_id": "hgs_brain.ingestion"
+      },
+      {
+        "file": ".spec/specs/ingestion.spec.md",
+        "id": "hgs_brain.ingestion.embedded",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The system shall chunk and embed document content via arcana and persist embeddings to pgvector.",
+        "subject_id": "hgs_brain.ingestion"
+      },
+      {
+        "file": ".spec/specs/ingestion.spec.md",
+        "id": "hgs_brain.ingestion.idempotent",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "Re-ingesting a document with the same source path and segment shall replace its existing embeddings rather than duplicate them.",
+        "subject_id": "hgs_brain.ingestion"
+      },
+      {
+        "file": ".spec/specs/ingestion.spec.md",
+        "id": "hgs_brain.ingestion.segment_tagged",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "Each ingested document shall be tagged with a segment (work or personal) at ingestion time.",
+        "subject_id": "hgs_brain.ingestion"
+      },
+      {
+        "file": ".spec/specs/retrieval.spec.md",
+        "id": "hgs_brain.retrieval.accepts_query",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The system shall accept a natural language question and a segment as input.",
+        "subject_id": "hgs_brain.retrieval"
+      },
+      {
+        "file": ".spec/specs/retrieval.spec.md",
+        "id": "hgs_brain.retrieval.rag_answer",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The system shall return an AI-generated answer assembled from the most relevant retrieved passages.",
+        "subject_id": "hgs_brain.retrieval"
+      },
+      {
+        "file": ".spec/specs/retrieval.spec.md",
+        "id": "hgs_brain.retrieval.scoped",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "Retrieval shall return only content belonging to the specified segment; work and personal knowledge shall not mix.",
+        "subject_id": "hgs_brain.retrieval"
+      },
+      {
+        "file": ".spec/specs/spec_system.spec.md",
+        "id": "spec.workspace.agents_present",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The repository shall include a .spec/AGENTS.md that gives local operating guidance for agents working inside the .spec workspace.",
+        "subject_id": "spec.system"
+      },
+      {
+        "file": ".spec/specs/spec_system.spec.md",
+        "id": "spec.workspace.decisions_readme_present",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The repository shall include a .spec/decisions/README.md that explains when durable ADRs belong in the workspace.",
+        "subject_id": "spec.system"
+      },
+      {
+        "file": ".spec/specs/spec_system.spec.md",
+        "id": "spec.workspace.readme_present",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The repository shall include a .spec/README.md that explains purpose, layout, and workflow.",
+        "subject_id": "spec.system"
+      },
+      {
+        "file": ".spec/specs/spec_system.spec.md",
+        "id": "spec.workspace.state_generated",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "When planning and verification run, the workspace shall generate .spec/state.json containing indexed subjects, indexed decisions, and verification state.",
+        "subject_id": "spec.system"
+      }
+    ],
+    "scenarios": [],
+    "subjects": [
+      {
+        "file": ".spec/specs/ingestion.spec.md",
+        "id": "hgs_brain.ingestion",
+        "meta": {
+          "decisions": [
+            "hgs_brain.decision.arcana_for_rag",
+            "hgs_brain.decision.pgvector_storage"
+          ],
+          "id": "hgs_brain.ingestion",
+          "kind": "feature",
+          "status": "active",
+          "summary": "Accepts markdown files, chunks and embeds them via arcana, and persists embeddings with segment tagging to pgvector.",
+          "surface": [
+            "lib/hgs_brain/ingestion.ex"
+          ],
+          "verification_minimum_strength": null
+        },
+        "title": "Ingestion"
+      },
+      {
+        "file": ".spec/specs/package.spec.md",
+        "id": "hgs_brain",
+        "meta": {
+          "decisions": [
+            "hgs_brain.decision.arcana_for_rag",
+            "hgs_brain.decision.pgvector_storage"
+          ],
+          "id": "hgs_brain",
+          "kind": "package",
+          "status": "active",
+          "summary": "Personal Phoenix LiveView second brain that ingests markdown documents and answers natural language questions scoped to a work or personal segment.",
+          "surface": [
+            "lib/hgs_brain",
+            "lib/hgs_brain_web"
+          ],
+          "verification_minimum_strength": null
+        },
+        "title": "Package"
+      },
+      {
+        "file": ".spec/specs/retrieval.spec.md",
+        "id": "hgs_brain.retrieval",
+        "meta": {
+          "decisions": [
+            "hgs_brain.decision.arcana_for_rag",
+            "hgs_brain.decision.pgvector_storage"
+          ],
+          "id": "hgs_brain.retrieval",
+          "kind": "feature",
+          "status": "active",
+          "summary": "Accepts natural language questions scoped to a segment and returns AI-generated answers from retrieved document context via arcana.",
+          "surface": [
+            "lib/hgs_brain/retrieval.ex"
+          ],
+          "verification_minimum_strength": null
+        },
+        "title": "Retrieval"
+      },
+      {
+        "file": ".spec/specs/spec_system.spec.md",
+        "id": "spec.system",
+        "meta": {
+          "decisions": null,
+          "id": "spec.system",
+          "kind": "policy",
+          "status": "active",
+          "summary": "Canonical workspace contract for authored specs and generated Spec Led state.",
+          "surface": [
+            ".spec/README.md",
+            ".spec/AGENTS.md",
+            ".spec/decisions/README.md",
+            ".spec/specs/*.spec.md",
+            ".spec/decisions/*.md"
+          ],
+          "verification_minimum_strength": null
+        },
+        "title": "Spec System"
+      }
+    ],
+    "verifications": [
+      {
+        "covers": [
+          "hgs_brain.ingestion.accepts_markdown",
+          "hgs_brain.ingestion.segment_tagged",
+          "hgs_brain.ingestion.embedded",
+          "hgs_brain.ingestion.idempotent"
+        ],
+        "file": ".spec/specs/ingestion.spec.md",
+        "kind": "source_file",
+        "subject_id": "hgs_brain.ingestion",
+        "target": "lib/hgs_brain/ingestion.ex"
+      },
+      {
+        "covers": [
+          "hgs_brain.retrieval.accepts_query",
+          "hgs_brain.retrieval.scoped",
+          "hgs_brain.retrieval.rag_answer"
+        ],
+        "file": ".spec/specs/retrieval.spec.md",
+        "kind": "source_file",
+        "subject_id": "hgs_brain.retrieval",
+        "target": "lib/hgs_brain/retrieval.ex"
+      },
+      {
+        "covers": [
+          "spec.workspace.readme_present"
+        ],
+        "file": ".spec/specs/spec_system.spec.md",
+        "kind": "source_file",
+        "subject_id": "spec.system",
+        "target": ".spec/README.md"
+      },
+      {
+        "covers": [
+          "spec.workspace.agents_present"
+        ],
+        "file": ".spec/specs/spec_system.spec.md",
+        "kind": "source_file",
+        "subject_id": "spec.system",
+        "target": ".spec/AGENTS.md"
+      },
+      {
+        "covers": [
+          "spec.workspace.decisions_readme_present"
+        ],
+        "file": ".spec/specs/spec_system.spec.md",
+        "kind": "source_file",
+        "subject_id": "spec.system",
+        "target": ".spec/decisions/README.md"
+      },
+      {
+        "covers": [
+          "spec.workspace.state_generated"
+        ],
+        "file": ".spec/specs/spec_system.spec.md",
+        "kind": "command",
+        "subject_id": "spec.system",
+        "target": "mix spec.plan"
+      },
+      {
+        "covers": [
+          "spec.workspace.state_generated"
+        ],
+        "file": ".spec/specs/spec_system.spec.md",
+        "kind": "command",
+        "subject_id": "spec.system",
+        "target": "mix spec.verify"
+      }
+    ]
+  },
+  "specification_version": "1.0",
+  "summary": {
+    "decision_parse_errors": 0,
+    "decisions": 2,
+    "exceptions": 1,
+    "findings": 0,
+    "requirements": 14,
+    "scenarios": 0,
+    "subjects": 4,
+    "verifications": 7
+  },
+  "verification": {
+    "claims": [
+      {
+        "cover_id": "hgs_brain.ingestion.accepts_markdown",
+        "file": ".spec/specs/ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.ingestion.embedded",
+        "file": ".spec/specs/ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.ingestion.idempotent",
+        "file": ".spec/specs/ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.ingestion.segment_tagged",
+        "file": ".spec/specs/ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.retrieval.accepts_query",
+        "file": ".spec/specs/retrieval.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.retrieval",
+        "target": "lib/hgs_brain/retrieval.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.retrieval.rag_answer",
+        "file": ".spec/specs/retrieval.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.retrieval",
+        "target": "lib/hgs_brain/retrieval.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.retrieval.scoped",
+        "file": ".spec/specs/retrieval.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.retrieval",
+        "target": "lib/hgs_brain/retrieval.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "spec.workspace.readme_present",
+        "file": ".spec/specs/spec_system.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "spec.system",
+        "target": ".spec/README.md",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "spec.workspace.agents_present",
+        "file": ".spec/specs/spec_system.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "spec.system",
+        "target": ".spec/AGENTS.md",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "spec.workspace.decisions_readme_present",
+        "file": ".spec/specs/spec_system.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "spec.system",
+        "target": ".spec/decisions/README.md",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "spec.workspace.state_generated",
+        "file": ".spec/specs/spec_system.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "spec.system",
+        "target": "mix spec.plan",
+        "verification_index": 3
+      },
+      {
+        "cover_id": "spec.workspace.state_generated",
+        "file": ".spec/specs/spec_system.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "spec.system",
+        "target": "mix spec.verify",
+        "verification_index": 4
+      }
+    ],
+    "cli_minimum_strength": null,
+    "default_minimum_strength": "claimed",
+    "strength_summary": {
+      "claimed": 2,
+      "executed": 0,
+      "linked": 10
+    },
+    "threshold_failures": 0
+  },
+  "workspace": {
+    "decision_count": 2,
+    "spec_count": 4
+  }
+}

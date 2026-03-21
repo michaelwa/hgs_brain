@@ -1,29 +1,44 @@
 # Package
 
-High-level package contract.
+Personal second brain application with work/personal segmentation, markdown ingestion, and RAG-powered Q&A.
 
 ```spec-meta
-id: package.todo
+id: hgs_brain
 kind: package
 status: active
-summary: Package-level specification.
-surface: []
+summary: Personal Phoenix LiveView second brain that ingests markdown documents and answers natural language questions scoped to a work or personal segment.
+surface:
+  - lib/hgs_brain
+  - lib/hgs_brain_web
+decisions:
+  - hgs_brain.decision.arcana_for_rag
+  - hgs_brain.decision.pgvector_storage
 ```
 
 ## Requirements
 
 ```spec-requirements
-- id: package.todo.requirement
-  statement: Define package behavior requirements here.
+- id: hgs_brain.segmentation
+  statement: The system shall support work and personal segments, keeping all knowledge and query results scoped to the selected segment.
   priority: must
-  stability: evolving
+  stability: stable
+- id: hgs_brain.markdown_ingestion
+  statement: The system shall accept markdown files as knowledge sources and make their content available for retrieval.
+  priority: must
+  stability: stable
+- id: hgs_brain.qa_interface
+  statement: The system shall provide a Q&A interface for asking natural language questions and receiving AI-generated answers from ingested knowledge.
+  priority: must
+  stability: stable
 ```
 
 ## Exceptions
 
 ```spec-exceptions
-- id: package.todo.bootstrap_waiver
+- id: hgs_brain.package_bootstrap_waiver
   covers:
-    - package.todo.requirement
-  reason: Starter scaffold leaves package-specific requirements for the author to refine.
+    - hgs_brain.segmentation
+    - hgs_brain.markdown_ingestion
+    - hgs_brain.qa_interface
+  reason: Package-level requirements are covered by the ingestion and retrieval feature specs. Verification will be added as those features are implemented.
 ```

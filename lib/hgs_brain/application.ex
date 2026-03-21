@@ -12,8 +12,7 @@ defmodule HgsBrain.Application do
       HgsBrain.Repo,
       {DNSCluster, query: Application.get_env(:hgs_brain, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: HgsBrain.PubSub},
-      # Start a worker by calling: HgsBrain.Worker.start_link(arg)
-      # {HgsBrain.Worker, arg},
+      Arcana.Embedder.Local,
       # Start to serve requests, typically the last entry
       HgsBrainWeb.Endpoint
     ]
