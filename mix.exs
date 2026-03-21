@@ -66,7 +66,8 @@ defmodule HgsBrain.MixProject do
       {:gettext, "~> 0.26"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      {:spec_led_ex, path: "../../3rd_party_libs/specled_ex", only: [:dev, :test], runtime: false}
     ]
   end
 
