@@ -80,7 +80,8 @@ defmodule HgsBrain.Retrieval do
   defp enrich_sources(chunks, segment) do
     file_paths = fetch_file_paths(chunks)
 
-    Enum.map(chunks, fn chunk ->
+    chunks
+    |> Enum.map(fn chunk ->
       %{
         text: Map.get(chunk, :text, ""),
         source: Map.get(file_paths, Map.get(chunk, :document_id)),
@@ -89,6 +90,12 @@ defmodule HgsBrain.Retrieval do
         chunk_index: Map.get(chunk, :chunk_index),
         document_id: Map.get(chunk, :document_id)
       }
+    end)
+    |> Enum.sort_by(& &1.score, fn
+      nil, nil -> true
+      nil, _ -> false
+      _, nil -> true
+      a, b -> a >= b
     end)
   end
 

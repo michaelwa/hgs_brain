@@ -1,12 +1,12 @@
 # Source Transparency — Weak Grounding State
 
-Clearly communicate when an answer has little or no supporting evidence.
+Clearly communicate when an answer has no supporting evidence.
 
 ```spec-meta
 id: hgs_brain.source_transparency.weak_grounding
 kind: feature
 status: active
-summary: When retrieval returns weak or no supporting passages, the UI presents a clear grounding-unavailable state instead of implying a well-supported answer.
+summary: When ask mode produces an answer without any retrieved supporting passages, the UI presents a clear weak-grounding state instead of implying the answer is well supported.
 surface:
   - lib/hgs_brain_web/live/chat_live.ex
 ```
@@ -15,9 +15,19 @@ surface:
 
 ```spec-requirements
 - id: hgs_brain.source_transparency.empty_citations
-  statement: If the system cannot provide supporting sources for an answer, it shall clearly indicate that the answer is weakly grounded or unavailable.
+  statement: If ask mode returns an answer with zero supporting sources, the system shall clearly indicate that the answer is weakly grounded.
   priority: must
-  stability: evolving
+  stability: stable
+
+- id: hgs_brain.source_transparency.answer_not_blocked
+  statement: When zero supporting sources are returned, the system shall still display the answer rather than suppressing it.
+  priority: must
+  stability: stable
+
+- id: hgs_brain.source_transparency.explicit_empty_state
+  statement: The Sources section shall render an explicit empty-state message when zero supporting sources are available.
+  priority: must
+  stability: stable
 ```
 
 ## Scenarios
@@ -26,29 +36,33 @@ surface:
 - id: hgs_brain.source_transparency.no_grounding
   covers:
     - hgs_brain.source_transparency.empty_citations
+    - hgs_brain.source_transparency.answer_not_blocked
+    - hgs_brain.source_transparency.explicit_empty_state
   given:
-    - The user asks a question but retrieval returns weak or no supporting passages
+    - The user asks a question and answer generation succeeds
+    - Retrieval returns zero supporting passages
   when:
     - The response is rendered
   then:
-    - The UI displays a clear "No supporting sources available" state rather than an empty Sources section or an unsupported answer
+    - The UI displays the answer
+    - The Sources section displays a clear "No supporting sources available" message
+    - The empty Sources state is visible instead of an empty citation list
 ```
 
 ## UX Notes
 
-- Show an explicit message such as "No supporting sources available" in the Sources section.
-- Do not suppress the answer entirely — label it as weakly grounded and let the user decide.
+- For v1, weak grounding is defined as zero supporting sources.
+- Do not infer weak grounding from a score threshold in v1.
+- The answer remains visible so the user can inspect it, but the lack of support must be obvious in the Sources area.
 
 ## Verification
 
 ```spec-verification
-- kind: source_file
-  target: lib/hgs_brain_web/live/chat_live.ex
+- kind: command
+  target: mix test test/hgs_brain_web/live/chat_live_test.exs
+  execute: true
   covers:
     - hgs_brain.source_transparency.empty_citations
+    - hgs_brain.source_transparency.answer_not_blocked
+    - hgs_brain.source_transparency.explicit_empty_state
 ```
-
-## Open Questions
-
-- What threshold defines "weak grounding" — zero passages, or passages below a score cutoff?
-- Should answer generation be blocked when no support is found, or merely labelled as weak?

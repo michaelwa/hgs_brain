@@ -195,18 +195,34 @@
       },
       {
         "file": ".spec/specs/source_transparency.citation_ui.spec.md",
+        "id": "hgs_brain.source_transparency.citation_fields",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "Each ask-mode citation shall display source-identifying metadata, excerpt text, segment, and ordinal rank.",
+        "subject_id": "hgs_brain.source_transparency.citation_ui"
+      },
+      {
+        "file": ".spec/specs/source_transparency.citation_ui.spec.md",
         "id": "hgs_brain.source_transparency.segment_visibility",
-        "priority": "should",
+        "priority": "must",
         "stability": "stable",
         "statement": "Citations shall make the active segment visible so users can confirm the answer was drawn from the intended knowledge scope.",
         "subject_id": "hgs_brain.source_transparency.citation_ui"
       },
       {
         "file": ".spec/specs/source_transparency.relevance_signal.spec.md",
+        "id": "hgs_brain.source_transparency.rank_order",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "Citations shall be rendered in descending retrieval relevance order so the displayed rank matches retrieval priority.",
+        "subject_id": "hgs_brain.source_transparency.relevance_signal"
+      },
+      {
+        "file": ".spec/specs/source_transparency.relevance_signal.spec.md",
         "id": "hgs_brain.source_transparency.relevance_signal",
-        "priority": "should",
-        "stability": "evolving",
-        "statement": "The system shall expose a lightweight relevance or confidence signal for each supporting citation, such as retrieval score or rank.",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The system shall expose a lightweight relevance signal for each supporting citation using ordinal rank within the retrieved result set.",
         "subject_id": "hgs_brain.source_transparency.relevance_signal"
       },
       {
@@ -235,18 +251,42 @@
       },
       {
         "file": ".spec/specs/source_transparency.search_consistency.spec.md",
-        "id": "hgs_brain.source_transparency.search_consistency",
-        "priority": "should",
+        "id": "hgs_brain.source_transparency.search_citation_fields",
+        "priority": "must",
         "stability": "stable",
-        "statement": "Search mode shall present source metadata in a format consistent with answer citations.",
+        "statement": "Each search result citation shall display the same core fields as ask-mode citations: source-identifying metadata, segment, excerpt text, and ordinal rank.",
         "subject_id": "hgs_brain.source_transparency.search_consistency"
+      },
+      {
+        "file": ".spec/specs/source_transparency.search_consistency.spec.md",
+        "id": "hgs_brain.source_transparency.search_consistency",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "Search mode shall present results using the same citation-card structure used for ask-mode citations.",
+        "subject_id": "hgs_brain.source_transparency.search_consistency"
+      },
+      {
+        "file": ".spec/specs/source_transparency.weak_grounding.spec.md",
+        "id": "hgs_brain.source_transparency.answer_not_blocked",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "When zero supporting sources are returned, the system shall still display the answer rather than suppressing it.",
+        "subject_id": "hgs_brain.source_transparency.weak_grounding"
       },
       {
         "file": ".spec/specs/source_transparency.weak_grounding.spec.md",
         "id": "hgs_brain.source_transparency.empty_citations",
         "priority": "must",
-        "stability": "evolving",
-        "statement": "If the system cannot provide supporting sources for an answer, it shall clearly indicate that the answer is weakly grounded or unavailable.",
+        "stability": "stable",
+        "statement": "If ask mode returns an answer with zero supporting sources, the system shall clearly indicate that the answer is weakly grounded.",
+        "subject_id": "hgs_brain.source_transparency.weak_grounding"
+      },
+      {
+        "file": ".spec/specs/source_transparency.weak_grounding.spec.md",
+        "id": "hgs_brain.source_transparency.explicit_empty_state",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The Sources section shall render an explicit empty-state message when zero supporting sources are available.",
         "subject_id": "hgs_brain.source_transparency.weak_grounding"
       },
       {
@@ -286,7 +326,8 @@
       {
         "covers": [
           "hgs_brain.source_transparency.answer_citations",
-          "hgs_brain.source_transparency.segment_visibility"
+          "hgs_brain.source_transparency.segment_visibility",
+          "hgs_brain.source_transparency.citation_fields"
         ],
         "file": ".spec/specs/source_transparency.citation_ui.spec.md",
         "given": [
@@ -295,7 +336,7 @@
         "id": "hgs_brain.source_transparency.ask_with_sources",
         "subject_id": "hgs_brain.source_transparency.citation_ui",
         "then": [
-          "The UI shows the synthesized answer and a Sources section listing each citation with file path, segment, and excerpt"
+          "The UI shows the synthesized answer and a Sources section listing each citation with source-identifying metadata, segment, excerpt text, and ordinal rank"
         ],
         "when": [
           "The answer is rendered"
@@ -303,7 +344,26 @@
       },
       {
         "covers": [
-          "hgs_brain.source_transparency.search_consistency"
+          "hgs_brain.source_transparency.relevance_signal",
+          "hgs_brain.source_transparency.rank_order"
+        ],
+        "file": ".spec/specs/source_transparency.relevance_signal.spec.md",
+        "given": [
+          "Retrieved passages are available for an answer or search result"
+        ],
+        "id": "hgs_brain.source_transparency.ranked_citations",
+        "subject_id": "hgs_brain.source_transparency.relevance_signal",
+        "then": [
+          "Each citation displays its ordinal rank and the highest-ranked citation appears first"
+        ],
+        "when": [
+          "Citations are rendered"
+        ]
+      },
+      {
+        "covers": [
+          "hgs_brain.source_transparency.search_consistency",
+          "hgs_brain.source_transparency.search_citation_fields"
         ],
         "file": ".spec/specs/source_transparency.search_consistency.spec.md",
         "given": [
@@ -312,7 +372,9 @@
         "id": "hgs_brain.source_transparency.search_with_metadata",
         "subject_id": "hgs_brain.source_transparency.search_consistency",
         "then": [
-          "Each result includes source-identifying metadata and an excerpt, rendered with the same layout used for ask-mode citations"
+          "Each result includes source-identifying metadata and an excerpt",
+          "Each result displays segment and ordinal rank",
+          "Results are rendered with the same citation layout used for ask-mode citations"
         ],
         "when": [
           "Matching passages are returned"
@@ -320,16 +382,21 @@
       },
       {
         "covers": [
-          "hgs_brain.source_transparency.empty_citations"
+          "hgs_brain.source_transparency.empty_citations",
+          "hgs_brain.source_transparency.answer_not_blocked",
+          "hgs_brain.source_transparency.explicit_empty_state"
         ],
         "file": ".spec/specs/source_transparency.weak_grounding.spec.md",
         "given": [
-          "The user asks a question but retrieval returns weak or no supporting passages"
+          "The user asks a question and answer generation succeeds",
+          "Retrieval returns zero supporting passages"
         ],
         "id": "hgs_brain.source_transparency.no_grounding",
         "subject_id": "hgs_brain.source_transparency.weak_grounding",
         "then": [
-          "The UI displays a clear \"No supporting sources available\" state rather than an empty Sources section or an unsupported answer"
+          "The UI displays the answer",
+          "The Sources section displays a clear \"No supporting sources available\" message",
+          "The empty Sources state is visible instead of an empty citation list"
         ],
         "when": [
           "The response is rendered"
@@ -347,7 +414,7 @@
           "id": "hgs_brain.chat_ui",
           "kind": "feature",
           "status": "active",
-          "summary": "LiveView page for querying the knowledge base, with segment selection, ask/search mode toggle (defaulting to ask), and result display. Results are fetched asynchronously and rendered on completion.",
+          "summary": "LiveView page for querying the knowledge base, with segment selection, ask/search mode toggle (defaulting to ask), and result display. Results are fetched asynchronously via start_async and rendered on completion.",
           "surface": [
             "lib/hgs_brain_web/live/chat_live.ex"
           ],
@@ -386,7 +453,7 @@
           "id": "hgs_brain",
           "kind": "package",
           "status": "active",
-          "summary": "Personal Phoenix LiveView second brain that ingests markdown documents and answers natural language questions scoped to a work or personal segment.",
+          "summary": "Personal Phoenix LiveView second brain that ingests markdown documents, answers natural language questions scoped to a work or personal segment, and surfaces grounded citations for every response.",
           "surface": [
             "mix.exs",
             "lib/hgs_brain",
@@ -408,7 +475,7 @@
           "id": "hgs_brain.retrieval",
           "kind": "feature",
           "status": "active",
-          "summary": "Accepts natural language questions scoped to a segment and returns AI-generated answers alongside enriched source maps containing passage text, file path, segment, score, and chunk position.",
+          "summary": "Accepts natural language questions scoped to a segment and returns AI-generated answers alongside enriched source maps containing passage text, file path, segment, score, and chunk position, sorted by descending relevance score.",
           "surface": [
             "lib/hgs_brain/retrieval.ex"
           ],
@@ -424,7 +491,7 @@
           "id": "hgs_brain.source_transparency.citation_ui",
           "kind": "feature",
           "status": "active",
-          "summary": "The chat UI displays a Sources list beneath each AI-generated answer, showing file path, segment, and excerpt for each supporting passage.",
+          "summary": "The chat UI displays a Sources list beneath each AI-generated answer, showing source identity, segment, excerpt, and ordinal rank for each supporting passage.",
           "surface": [
             "lib/hgs_brain_web/live/chat_live.ex"
           ],
@@ -440,7 +507,7 @@
           "id": "hgs_brain.source_transparency.relevance_signal",
           "kind": "feature",
           "status": "active",
-          "summary": "Each supporting citation carries a lightweight relevance or confidence signal — such as retrieval score or rank — so users can judge how strongly a passage supported the answer.",
+          "summary": "Each supporting citation carries a lightweight relevance signal expressed as retrieval rank so users can judge how strongly a passage supported the answer without interpreting raw similarity scores.",
           "surface": [
             "lib/hgs_brain/retrieval.ex",
             "lib/hgs_brain_web/live/chat_live.ex"
@@ -457,7 +524,7 @@
           "id": "hgs_brain.source_transparency.retrieval_context",
           "kind": "feature",
           "status": "active",
-          "summary": "The retrieval layer surfaces source metadata, excerpt text, and score for each retrieved passage so the UI can present grounded citations.",
+          "summary": "The retrieval layer surfaces source metadata, excerpt text, and score for each retrieved passage, sorted by descending relevance score, so the UI can present grounded citations in rank order.",
           "surface": [
             "lib/hgs_brain/retrieval.ex"
           ],
@@ -473,7 +540,7 @@
           "id": "hgs_brain.source_transparency.search_consistency",
           "kind": "feature",
           "status": "active",
-          "summary": "Search mode results display source metadata and excerpts in a format consistent with ask-mode citations, giving users a uniform inspection experience across both modes.",
+          "summary": "Search mode results display source metadata, excerpt text, segment visibility, and rank using the same citation card structure as ask-mode citations, giving users a uniform inspection experience across both modes.",
           "surface": [
             "lib/hgs_brain_web/live/chat_live.ex"
           ],
@@ -489,7 +556,7 @@
           "id": "hgs_brain.source_transparency.weak_grounding",
           "kind": "feature",
           "status": "active",
-          "summary": "When retrieval returns weak or no supporting passages, the UI presents a clear grounding-unavailable state instead of implying a well-supported answer.",
+          "summary": "When ask mode produces an answer without any retrieved supporting passages, the UI presents a clear weak-grounding state instead of implying the answer is well supported.",
           "surface": [
             "lib/hgs_brain_web/live/chat_live.ex"
           ],
@@ -599,30 +666,36 @@
       {
         "covers": [
           "hgs_brain.source_transparency.answer_citations",
-          "hgs_brain.source_transparency.segment_visibility"
+          "hgs_brain.source_transparency.segment_visibility",
+          "hgs_brain.source_transparency.citation_fields"
         ],
+        "execute": true,
         "file": ".spec/specs/source_transparency.citation_ui.spec.md",
-        "kind": "source_file",
+        "kind": "command",
         "subject_id": "hgs_brain.source_transparency.citation_ui",
-        "target": "lib/hgs_brain_web/live/chat_live.ex"
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs"
       },
       {
         "covers": [
-          "hgs_brain.source_transparency.relevance_signal"
+          "hgs_brain.source_transparency.relevance_signal",
+          "hgs_brain.source_transparency.rank_order"
         ],
+        "execute": true,
         "file": ".spec/specs/source_transparency.relevance_signal.spec.md",
-        "kind": "source_file",
+        "kind": "command",
         "subject_id": "hgs_brain.source_transparency.relevance_signal",
-        "target": "lib/hgs_brain/retrieval.ex"
+        "target": "mix test test/hgs_brain/retrieval_test.exs"
       },
       {
         "covers": [
-          "hgs_brain.source_transparency.relevance_signal"
+          "hgs_brain.source_transparency.relevance_signal",
+          "hgs_brain.source_transparency.rank_order"
         ],
+        "execute": true,
         "file": ".spec/specs/source_transparency.relevance_signal.spec.md",
-        "kind": "source_file",
+        "kind": "command",
         "subject_id": "hgs_brain.source_transparency.relevance_signal",
-        "target": "lib/hgs_brain_web/live/chat_live.ex"
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs"
       },
       {
         "covers": [
@@ -649,21 +722,26 @@
       },
       {
         "covers": [
-          "hgs_brain.source_transparency.search_consistency"
+          "hgs_brain.source_transparency.search_consistency",
+          "hgs_brain.source_transparency.search_citation_fields"
         ],
+        "execute": true,
         "file": ".spec/specs/source_transparency.search_consistency.spec.md",
-        "kind": "source_file",
+        "kind": "command",
         "subject_id": "hgs_brain.source_transparency.search_consistency",
-        "target": "lib/hgs_brain_web/live/chat_live.ex"
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs"
       },
       {
         "covers": [
-          "hgs_brain.source_transparency.empty_citations"
+          "hgs_brain.source_transparency.empty_citations",
+          "hgs_brain.source_transparency.answer_not_blocked",
+          "hgs_brain.source_transparency.explicit_empty_state"
         ],
+        "execute": true,
         "file": ".spec/specs/source_transparency.weak_grounding.spec.md",
-        "kind": "source_file",
+        "kind": "command",
         "subject_id": "hgs_brain.source_transparency.weak_grounding",
-        "target": "lib/hgs_brain_web/live/chat_live.ex"
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs"
       },
       {
         "covers": [
@@ -718,8 +796,8 @@
     "decisions": 3,
     "exceptions": 1,
     "findings": 0,
-    "requirements": 28,
-    "scenarios": 3,
+    "requirements": 33,
+    "scenarios": 4,
     "subjects": 10,
     "verifications": 18
   },
@@ -1014,45 +1092,78 @@
       {
         "cover_id": "hgs_brain.source_transparency.answer_citations",
         "file": ".spec/specs/source_transparency.citation_ui.spec.md",
-        "kind": "source_file",
+        "kind": "command",
         "meets_minimum": true,
         "required_strength": "claimed",
-        "strength": "linked",
+        "strength": "executed",
         "subject_id": "hgs_brain.source_transparency.citation_ui",
-        "target": "lib/hgs_brain_web/live/chat_live.ex",
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.source_transparency.citation_fields",
+        "file": ".spec/specs/source_transparency.citation_ui.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.source_transparency.citation_ui",
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs",
         "verification_index": 0
       },
       {
         "cover_id": "hgs_brain.source_transparency.segment_visibility",
         "file": ".spec/specs/source_transparency.citation_ui.spec.md",
-        "kind": "source_file",
+        "kind": "command",
         "meets_minimum": true,
         "required_strength": "claimed",
-        "strength": "linked",
+        "strength": "executed",
         "subject_id": "hgs_brain.source_transparency.citation_ui",
-        "target": "lib/hgs_brain_web/live/chat_live.ex",
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.source_transparency.rank_order",
+        "file": ".spec/specs/source_transparency.relevance_signal.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.source_transparency.relevance_signal",
+        "target": "mix test test/hgs_brain/retrieval_test.exs",
         "verification_index": 0
       },
       {
         "cover_id": "hgs_brain.source_transparency.relevance_signal",
         "file": ".spec/specs/source_transparency.relevance_signal.spec.md",
-        "kind": "source_file",
+        "kind": "command",
         "meets_minimum": true,
         "required_strength": "claimed",
-        "strength": "linked",
+        "strength": "executed",
         "subject_id": "hgs_brain.source_transparency.relevance_signal",
-        "target": "lib/hgs_brain/retrieval.ex",
+        "target": "mix test test/hgs_brain/retrieval_test.exs",
         "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.source_transparency.rank_order",
+        "file": ".spec/specs/source_transparency.relevance_signal.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.source_transparency.relevance_signal",
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 1
       },
       {
         "cover_id": "hgs_brain.source_transparency.relevance_signal",
         "file": ".spec/specs/source_transparency.relevance_signal.spec.md",
-        "kind": "source_file",
+        "kind": "command",
         "meets_minimum": true,
         "required_strength": "claimed",
-        "strength": "linked",
+        "strength": "executed",
         "subject_id": "hgs_brain.source_transparency.relevance_signal",
-        "target": "lib/hgs_brain_web/live/chat_live.ex",
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs",
         "verification_index": 1
       },
       {
@@ -1120,27 +1231,60 @@
         "subject_id": "hgs_brain.source_transparency.retrieval_context",
         "target": "mix test test/hgs_brain/retrieval_test.exs",
         "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.source_transparency.search_citation_fields",
+        "file": ".spec/specs/source_transparency.search_consistency.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.source_transparency.search_consistency",
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 0
       },
       {
         "cover_id": "hgs_brain.source_transparency.search_consistency",
         "file": ".spec/specs/source_transparency.search_consistency.spec.md",
-        "kind": "source_file",
+        "kind": "command",
         "meets_minimum": true,
         "required_strength": "claimed",
-        "strength": "linked",
+        "strength": "executed",
         "subject_id": "hgs_brain.source_transparency.search_consistency",
-        "target": "lib/hgs_brain_web/live/chat_live.ex",
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.source_transparency.answer_not_blocked",
+        "file": ".spec/specs/source_transparency.weak_grounding.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.source_transparency.weak_grounding",
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs",
         "verification_index": 0
       },
       {
         "cover_id": "hgs_brain.source_transparency.empty_citations",
         "file": ".spec/specs/source_transparency.weak_grounding.spec.md",
-        "kind": "source_file",
+        "kind": "command",
         "meets_minimum": true,
         "required_strength": "claimed",
-        "strength": "linked",
+        "strength": "executed",
         "subject_id": "hgs_brain.source_transparency.weak_grounding",
-        "target": "lib/hgs_brain_web/live/chat_live.ex",
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.source_transparency.explicit_empty_state",
+        "file": ".spec/specs/source_transparency.weak_grounding.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.source_transparency.weak_grounding",
+        "target": "mix test test/hgs_brain_web/live/chat_live_test.exs",
         "verification_index": 0
       },
       {
@@ -1203,8 +1347,8 @@
     "default_minimum_strength": "claimed",
     "strength_summary": {
       "claimed": 2,
-      "executed": 16,
-      "linked": 25
+      "executed": 28,
+      "linked": 19
     },
     "threshold_failures": 0
   },

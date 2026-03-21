@@ -11,7 +11,7 @@ Personal second brain application with work/personal segmentation, markdown inge
 id: hgs_brain
 kind: package
 status: active
-summary: Personal Phoenix LiveView second brain that ingests markdown documents and answers natural language questions scoped to a work or personal segment.
+summary: Personal Phoenix LiveView second brain that ingests markdown documents, answers natural language questions scoped to a work or personal segment, and surfaces grounded citations for every response.
 surface:
   - mix.exs
   - lib/hgs_brain

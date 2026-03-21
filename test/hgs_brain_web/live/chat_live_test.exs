@@ -4,6 +4,16 @@ defmodule HgsBrainWeb.ChatLiveTest do
   # covers: hgs_brain.chat_ui.answer_display
   # covers: hgs_brain.chat_ui.loading_state
   # covers: hgs_brain.chat_ui.mode_selector
+  # covers: hgs_brain.source_transparency.answer_citations
+  # covers: hgs_brain.source_transparency.segment_visibility
+  # covers: hgs_brain.source_transparency.citation_fields
+  # covers: hgs_brain.source_transparency.empty_citations
+  # covers: hgs_brain.source_transparency.answer_not_blocked
+  # covers: hgs_brain.source_transparency.explicit_empty_state
+  # covers: hgs_brain.source_transparency.search_consistency
+  # covers: hgs_brain.source_transparency.search_citation_fields
+  # covers: hgs_brain.source_transparency.relevance_signal
+  # covers: hgs_brain.source_transparency.rank_order
 
   use HgsBrainWeb.ConnCase, async: false
 
@@ -12,6 +22,29 @@ defmodule HgsBrainWeb.ChatLiveTest do
 
   setup :set_mox_global
   setup :verify_on_exit!
+
+  # Waits for async LiveView operations to complete and the rendered HTML to contain
+  # `expected`. Retries up to `timeout` milliseconds before failing.
+  defp wait_for_render(view, expected, timeout \\ 500) do
+    deadline = System.monotonic_time(:millisecond) + timeout
+    wait_loop(view, expected, deadline)
+  end
+
+  defp wait_loop(view, expected, deadline) do
+    html = render(view)
+
+    cond do
+      html =~ expected ->
+        html
+
+      System.monotonic_time(:millisecond) >= deadline ->
+        flunk("Expected rendered HTML to contain #{inspect(expected)}\n\nGot:\n#{html}")
+
+      true ->
+        Process.sleep(10)
+        wait_loop(view, expected, deadline)
+    end
+  end
 
   describe "mount" do
     test "renders with ask mode and personal segment as defaults", %{conn: conn} do
@@ -39,7 +72,7 @@ defmodule HgsBrainWeb.ChatLiveTest do
       {:ok, view, _html} = live(conn, "/chat")
 
       render_submit(view, "submit", %{"question" => "anything"})
-      assert render(view) =~ "A personal answer."
+      wait_for_render(view, "A personal answer.")
 
       render_click(view, "set_segment", %{"segment" => "work"})
       refute render(view) =~ "A personal answer."
@@ -63,7 +96,7 @@ defmodule HgsBrainWeb.ChatLiveTest do
       {:ok, view, _html} = live(conn, "/chat")
 
       render_submit(view, "submit", %{"question" => "anything"})
-      assert render(view) =~ "An answer."
+      wait_for_render(view, "An answer.")
 
       render_click(view, "set_mode", %{"mode" => "search"})
       refute render(view) =~ "An answer."
@@ -79,7 +112,36 @@ defmodule HgsBrainWeb.ChatLiveTest do
       {:ok, view, _html} = live(conn, "/chat")
 
       render_submit(view, "submit", %{"question" => "What VM does Elixir use?"})
-      assert render(view) =~ "Elixir runs on the BEAM virtual machine."
+
+      assert wait_for_render(view, "Elixir runs on the BEAM virtual machine.") =~
+               "Elixir runs on the BEAM virtual machine."
+    end
+
+    test "displays citation fields: source, segment, excerpt, and rank", %{conn: conn} do
+      stub(HgsBrain.MockArcanaClient, :ask, fn _q, _opts ->
+        {:ok, "An answer.", [%{text: "Some excerpt text.", score: 0.9}]}
+      end)
+
+      {:ok, view, _html} = live(conn, "/chat")
+      render_submit(view, "submit", %{"question" => "anything"})
+
+      html = wait_for_render(view, "An answer.")
+      assert html =~ "Some excerpt text."
+      assert html =~ "Personal"
+      assert html =~ "#1"
+    end
+
+    test "displays answer and explicit empty-sources message when no sources returned",
+         %{conn: conn} do
+      stub(HgsBrain.MockArcanaClient, :ask, fn _q, _opts ->
+        {:ok, "An answer with no backing.", []}
+      end)
+
+      {:ok, view, _html} = live(conn, "/chat")
+      render_submit(view, "submit", %{"question" => "anything"})
+
+      html = wait_for_render(view, "An answer with no backing.")
+      assert html =~ "No supporting sources available"
     end
 
     test "displays an error message on failure", %{conn: conn} do
@@ -90,7 +152,7 @@ defmodule HgsBrainWeb.ChatLiveTest do
       {:ok, view, _html} = live(conn, "/chat")
 
       render_submit(view, "submit", %{"question" => "anything"})
-      assert render(view) =~ "no_llm_configured"
+      assert wait_for_render(view, "no_llm_configured") =~ "no_llm_configured"
     end
 
     test "ignores empty submissions", %{conn: conn} do
@@ -102,7 +164,7 @@ defmodule HgsBrainWeb.ChatLiveTest do
   end
 
   describe "submit in search mode" do
-    test "displays ranked passages", %{conn: conn} do
+    test "displays citation fields: source, segment, excerpt, and rank", %{conn: conn} do
       stub(HgsBrain.MockArcanaClient, :search, fn _q, _opts ->
         [%{text: "Elixir is built on Erlang.", score: 0.93}]
       end)
@@ -112,9 +174,28 @@ defmodule HgsBrainWeb.ChatLiveTest do
       render_click(view, "set_mode", %{"mode" => "search"})
       render_submit(view, "submit", %{"question" => "Elixir origins"})
 
-      html = render(view)
-      assert html =~ "Elixir is built on Erlang."
+      html = wait_for_render(view, "Elixir is built on Erlang.")
+      assert html =~ "Personal"
       assert html =~ "#1"
+    end
+
+    test "displays results in descending relevance order", %{conn: conn} do
+      stub(HgsBrain.MockArcanaClient, :search, fn _q, _opts ->
+        [
+          %{text: "Lower relevance passage.", score: 0.5},
+          %{text: "Higher relevance passage.", score: 0.9}
+        ]
+      end)
+
+      {:ok, view, _html} = live(conn, "/chat")
+
+      render_click(view, "set_mode", %{"mode" => "search"})
+      render_submit(view, "submit", %{"question" => "anything"})
+
+      html = wait_for_render(view, "Higher relevance passage.")
+      higher_pos = :binary.match(html, "Higher relevance passage.") |> elem(0)
+      lower_pos = :binary.match(html, "Lower relevance passage.") |> elem(0)
+      assert higher_pos < lower_pos, "highest-ranked citation should appear first"
     end
   end
 end

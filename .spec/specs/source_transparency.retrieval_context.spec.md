@@ -6,7 +6,7 @@ Extend the retrieval layer to return source metadata alongside answers.
 id: hgs_brain.source_transparency.retrieval_context
 kind: feature
 status: active
-summary: The retrieval layer surfaces source metadata, excerpt text, and score for each retrieved passage so the UI can present grounded citations.
+summary: The retrieval layer surfaces source metadata, excerpt text, and score for each retrieved passage, sorted by descending relevance score, so the UI can present grounded citations in rank order.
 surface:
   - lib/hgs_brain/retrieval.ex
 ```
@@ -50,5 +50,4 @@ surface:
 
 ## Open Questions
 
-- What metadata does Arcana already return with retrieved chunks in `ask` and `search` flows?
 - Should the retrieval layer normalise raw file paths into a friendlier title, or leave that to the UI?
