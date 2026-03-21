@@ -83,6 +83,14 @@
       },
       {
         "file": ".spec/specs/chat_ui.spec.md",
+        "id": "hgs_brain.chat_ui.mode_selector",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The UI shall allow the user to choose between ask mode (AI-generated answer) and search mode (raw retrieved passages), defaulting to ask.",
+        "subject_id": "hgs_brain.chat_ui"
+      },
+      {
+        "file": ".spec/specs/chat_ui.spec.md",
         "id": "hgs_brain.chat_ui.question_input",
         "priority": "must",
         "stability": "stable",
@@ -196,7 +204,7 @@
           "id": "hgs_brain.chat_ui",
           "kind": "feature",
           "status": "active",
-          "summary": "LiveView page for asking questions against the knowledge base, with segment selection and answer display.",
+          "summary": "LiveView page for querying the knowledge base, with segment selection, ask/search mode toggle, and result display.",
           "surface": [
             "lib/hgs_brain_web/live/chat_live.ex"
           ],
@@ -289,7 +297,8 @@
           "hgs_brain.chat_ui.segment_selector",
           "hgs_brain.chat_ui.question_input",
           "hgs_brain.chat_ui.answer_display",
-          "hgs_brain.chat_ui.loading_state"
+          "hgs_brain.chat_ui.loading_state",
+          "hgs_brain.chat_ui.mode_selector"
         ],
         "file": ".spec/specs/chat_ui.spec.md",
         "kind": "source_file",
@@ -372,7 +381,7 @@
     "decisions": 2,
     "exceptions": 1,
     "findings": 0,
-    "requirements": 18,
+    "requirements": 19,
     "scenarios": 0,
     "subjects": 5,
     "verifications": 8
@@ -392,6 +401,17 @@
       },
       {
         "cover_id": "hgs_brain.chat_ui.loading_state",
+        "file": ".spec/specs/chat_ui.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.chat_ui",
+        "target": "lib/hgs_brain_web/live/chat_live.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.chat_ui.mode_selector",
         "file": ".spec/specs/chat_ui.spec.md",
         "kind": "source_file",
         "meets_minimum": true,
@@ -561,7 +581,7 @@
     "strength_summary": {
       "claimed": 2,
       "executed": 0,
-      "linked": 14
+      "linked": 15
     },
     "threshold_failures": 0
   },
