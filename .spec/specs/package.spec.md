@@ -8,6 +8,7 @@ kind: package
 status: active
 summary: Personal Phoenix LiveView second brain that ingests markdown documents and answers natural language questions scoped to a work or personal segment.
 surface:
+  - mix.exs
   - lib/hgs_brain
   - lib/hgs_brain_web
 decisions:
