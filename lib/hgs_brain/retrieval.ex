@@ -12,6 +12,7 @@ defmodule HgsBrain.Retrieval do
   <!-- covers: hgs_brain.source_transparency.source_metadata -->
   <!-- covers: hgs_brain.source_transparency.source_excerpt -->
   <!-- covers: hgs_brain.source_transparency.multiple_sources -->
+  <!-- covers: hgs_brain.source_transparency.relevance_signal -->
   """
 
   import Ecto.Query

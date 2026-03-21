@@ -5,7 +5,7 @@ Extend the retrieval layer to return source metadata alongside answers.
 ```spec-meta
 id: hgs_brain.source_transparency.retrieval_context
 kind: feature
-status: proposed
+status: active
 summary: The retrieval layer surfaces source metadata, excerpt text, and score for each retrieved passage so the UI can present grounded citations.
 surface:
   - lib/hgs_brain/retrieval.ex
@@ -41,6 +41,7 @@ surface:
     - hgs_brain.source_transparency.multiple_sources
 - kind: command
   target: mix test test/hgs_brain/retrieval_test.exs
+  execute: true
   covers:
     - hgs_brain.source_transparency.source_metadata
     - hgs_brain.source_transparency.source_excerpt

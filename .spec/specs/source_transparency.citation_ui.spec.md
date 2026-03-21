@@ -5,7 +5,7 @@ Render supporting citations beneath each answer in ask mode.
 ```spec-meta
 id: hgs_brain.source_transparency.citation_ui
 kind: feature
-status: proposed
+status: active
 summary: The chat UI displays a Sources list beneath each AI-generated answer, showing file path, segment, and excerpt for each supporting passage.
 surface:
   - lib/hgs_brain_web/live/chat_live.ex
@@ -46,12 +46,12 @@ surface:
 - Each source item shows: file path or title, segment, excerpt text.
 - Keep the list readable without collapsing by default; add collapsing later if clutter becomes an issue.
 
-## Exceptions
+## Verification
 
-```spec-exceptions
-- id: hgs_brain.source_transparency.citation_ui.unimplemented
+```spec-verification
+- kind: source_file
+  target: lib/hgs_brain_web/live/chat_live.ex
   covers:
     - hgs_brain.source_transparency.answer_citations
     - hgs_brain.source_transparency.segment_visibility
-  reason: Feature not yet implemented. Verification targets will carry covers markers once the UI is built.
 ```

@@ -5,7 +5,7 @@ Clearly communicate when an answer has little or no supporting evidence.
 ```spec-meta
 id: hgs_brain.source_transparency.weak_grounding
 kind: feature
-status: proposed
+status: active
 summary: When retrieval returns weak or no supporting passages, the UI presents a clear grounding-unavailable state instead of implying a well-supported answer.
 surface:
   - lib/hgs_brain_web/live/chat_live.ex
@@ -39,13 +39,13 @@ surface:
 - Show an explicit message such as "No supporting sources available" in the Sources section.
 - Do not suppress the answer entirely — label it as weakly grounded and let the user decide.
 
-## Exceptions
+## Verification
 
-```spec-exceptions
-- id: hgs_brain.source_transparency.weak_grounding.unimplemented
+```spec-verification
+- kind: source_file
+  target: lib/hgs_brain_web/live/chat_live.ex
   covers:
     - hgs_brain.source_transparency.empty_citations
-  reason: Feature not yet implemented. Verification targets will carry covers markers once the UI is built.
 ```
 
 ## Open Questions

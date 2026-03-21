@@ -29,4 +29,4 @@ File paths are resolved in a single batched query against `Arcana.Document` keye
 - The UI receives ready-to-render source maps; it does not need to understand Arcana's internal chunk format.
 - A small additional DB query runs per ask/search call to resolve file paths. This is acceptable given the low cardinality of chunks per query (default limit: 5–10).
 - If `document_id` is nil (e.g. in tests or edge cases), `source` is nil rather than an error.
-- The `chat_live.ex` `handle_async` clause for `:query` must be updated in slice 2 to consume the enriched sources instead of discarding `_context`.
+- The `chat_live.ex` `handle_async` clause for `:query` now stores enriched sources in the `sources` assign, which is rendered as a Sources section below each answer and reused for search results.

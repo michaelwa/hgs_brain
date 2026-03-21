@@ -5,7 +5,7 @@ Present source metadata in search mode using the same citation format as ask mod
 ```spec-meta
 id: hgs_brain.source_transparency.search_consistency
 kind: feature
-status: proposed
+status: active
 summary: Search mode results display source metadata and excerpts in a format consistent with ask-mode citations, giving users a uniform inspection experience across both modes.
 surface:
   - lib/hgs_brain_web/live/chat_live.ex
@@ -39,11 +39,11 @@ surface:
 - Reuse the citation component introduced in `source_transparency.citation_ui` rather than building a parallel search-result layout.
 - Search results are inherently a list of citations with no synthesized answer above them.
 
-## Exceptions
+## Verification
 
-```spec-exceptions
-- id: hgs_brain.source_transparency.search_consistency.unimplemented
+```spec-verification
+- kind: source_file
+  target: lib/hgs_brain_web/live/chat_live.ex
   covers:
     - hgs_brain.source_transparency.search_consistency
-  reason: Feature not yet implemented. Verification targets will carry covers markers once the UI is built.
 ```

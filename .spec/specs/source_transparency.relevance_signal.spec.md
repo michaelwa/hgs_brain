@@ -5,7 +5,7 @@ Expose a retrieval score or rank alongside each citation.
 ```spec-meta
 id: hgs_brain.source_transparency.relevance_signal
 kind: feature
-status: proposed
+status: active
 summary: Each supporting citation carries a lightweight relevance or confidence signal — such as retrieval score or rank — so users can judge how strongly a passage supported the answer.
 surface:
   - lib/hgs_brain/retrieval.ex
@@ -26,13 +26,17 @@ surface:
 - Display score or rank as a secondary detail on each citation item (e.g. small badge or muted text).
 - Avoid presenting raw float scores without context; a rank (1st, 2nd, …) or a normalised label (high / medium / low) is preferable if the raw score is not intuitive.
 
-## Exceptions
+## Verification
 
-```spec-exceptions
-- id: hgs_brain.source_transparency.relevance_signal.unimplemented
+```spec-verification
+- kind: source_file
+  target: lib/hgs_brain/retrieval.ex
   covers:
     - hgs_brain.source_transparency.relevance_signal
-  reason: Feature not yet implemented. Verification targets will carry covers markers once the retrieval and UI work is complete.
+- kind: source_file
+  target: lib/hgs_brain_web/live/chat_live.ex
+  covers:
+    - hgs_brain.source_transparency.relevance_signal
 ```
 
 ## Open Questions

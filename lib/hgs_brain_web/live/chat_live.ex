@@ -6,6 +6,11 @@ defmodule HgsBrainWeb.ChatLive do
   # <!-- covers: hgs_brain.chat_ui.answer_display -->
   # <!-- covers: hgs_brain.chat_ui.loading_state -->
   # <!-- covers: hgs_brain.chat_ui.mode_selector -->
+  # <!-- covers: hgs_brain.source_transparency.answer_citations -->
+  # <!-- covers: hgs_brain.source_transparency.segment_visibility -->
+  # <!-- covers: hgs_brain.source_transparency.empty_citations -->
+  # <!-- covers: hgs_brain.source_transparency.search_consistency -->
+  # <!-- covers: hgs_brain.source_transparency.relevance_signal -->
 
   alias HgsBrain.Retrieval
 
@@ -17,6 +22,7 @@ defmodule HgsBrainWeb.ChatLive do
        mode: :ask,
        question: "",
        answer: nil,
+       sources: [],
        results: [],
        loading: false,
        error: nil
@@ -29,6 +35,7 @@ defmodule HgsBrainWeb.ChatLive do
      assign(socket,
        segment: String.to_existing_atom(segment),
        answer: nil,
+       sources: [],
        results: [],
        error: nil
      )}
@@ -36,7 +43,13 @@ defmodule HgsBrainWeb.ChatLive do
 
   def handle_event("set_mode", %{"mode" => mode}, socket) do
     {:noreply,
-     assign(socket, mode: String.to_existing_atom(mode), answer: nil, results: [], error: nil)}
+     assign(socket,
+       mode: String.to_existing_atom(mode),
+       answer: nil,
+       sources: [],
+       results: [],
+       error: nil
+     )}
   end
 
   def handle_event("submit", %{"question" => question}, socket) when byte_size(question) > 0 do
@@ -47,6 +60,7 @@ defmodule HgsBrainWeb.ChatLive do
         question: question,
         loading: true,
         answer: nil,
+        sources: [],
         results: [],
         error: nil
       )
@@ -63,8 +77,8 @@ defmodule HgsBrainWeb.ChatLive do
   def handle_event("submit", _params, socket), do: {:noreply, socket}
 
   @impl true
-  def handle_async(:query, {:ok, {:ok, answer, _context}}, socket) do
-    {:noreply, assign(socket, loading: false, answer: answer)}
+  def handle_async(:query, {:ok, {:ok, answer, sources}}, socket) do
+    {:noreply, assign(socket, loading: false, answer: answer, sources: sources)}
   end
 
   def handle_async(:query, {:ok, {:search, results}}, socket) do
@@ -182,21 +196,52 @@ defmodule HgsBrainWeb.ChatLive do
       </div>
 
       <%!-- Ask answer --%>
-      <div
-        :if={@answer}
-        class="rounded-lg bg-zinc-50 border border-zinc-200 px-5 py-4 text-sm text-zinc-700 leading-relaxed whitespace-pre-wrap"
-      >
-        {@answer}
+      <div :if={@answer} class="space-y-4">
+        <div class="rounded-lg bg-zinc-50 border border-zinc-200 px-5 py-4 text-sm text-zinc-700 leading-relaxed whitespace-pre-wrap">
+          {@answer}
+        </div>
+
+        <%!-- Sources section --%>
+        <div>
+          <h2 class="text-xs font-semibold uppercase tracking-wide text-zinc-400 mb-2">Sources</h2>
+          <div :if={@sources == []} class="text-sm text-zinc-400 italic">
+            No supporting sources available.
+          </div>
+          <div :if={@sources != []} class="space-y-2">
+            <div
+              :for={{source, rank} <- Enum.with_index(@sources, 1)}
+              class="rounded-lg border border-zinc-200 px-4 py-3 space-y-1"
+            >
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-medium text-zinc-600 truncate">
+                  {source.source || "Unknown source"}
+                </span>
+                <span class="text-xs text-zinc-400 shrink-0">
+                  #{rank} &middot; {String.capitalize(Atom.to_string(source.segment))}
+                </span>
+              </div>
+              <p class="text-xs text-zinc-500 leading-relaxed line-clamp-3">{source.text}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <%!-- Search results --%>
       <div :if={@results != []} class="space-y-3">
+        <h2 class="text-xs font-semibold uppercase tracking-wide text-zinc-400">Sources</h2>
         <div
-          :for={result <- @results}
-          class="rounded-lg bg-zinc-50 border border-zinc-200 px-5 py-4 space-y-2"
+          :for={{result, rank} <- Enum.with_index(@results, 1)}
+          class="rounded-lg border border-zinc-200 px-4 py-3 space-y-1"
         >
-          <p class="text-sm text-zinc-700 leading-relaxed">{result.text}</p>
-          <p class="text-xs text-zinc-400">Score: {Float.round(result.score, 3)}</p>
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-medium text-zinc-600 truncate">
+              {result.source || "Unknown source"}
+            </span>
+            <span class="text-xs text-zinc-400 shrink-0">
+              #{rank} &middot; {String.capitalize(Atom.to_string(result.segment))}
+            </span>
+          </div>
+          <p class="text-xs text-zinc-500 leading-relaxed line-clamp-3">{result.text}</p>
         </div>
       </div>
 

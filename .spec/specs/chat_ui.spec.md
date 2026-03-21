@@ -9,6 +9,8 @@ status: active
 summary: LiveView page for querying the knowledge base, with segment selection, ask/search mode toggle (defaulting to ask), and result display. Results are fetched asynchronously and rendered on completion.
 surface:
   - lib/hgs_brain_web/live/chat_live.ex
+decisions:
+  - hgs_brain.decision.source_transparency_at_retrieval_boundary
 ```
 
 ## Requirements

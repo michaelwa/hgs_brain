@@ -114,7 +114,7 @@ defmodule HgsBrainWeb.ChatLiveTest do
 
       html = render(view)
       assert html =~ "Elixir is built on Erlang."
-      assert html =~ "0.93"
+      assert html =~ "#1"
     end
   end
 end
