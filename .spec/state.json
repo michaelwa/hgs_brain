@@ -66,6 +66,38 @@
         "subject_id": "hgs_brain"
       },
       {
+        "file": ".spec/specs/chat_ui.spec.md",
+        "id": "hgs_brain.chat_ui.answer_display",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The UI shall display the AI-generated answer after the question is submitted.",
+        "subject_id": "hgs_brain.chat_ui"
+      },
+      {
+        "file": ".spec/specs/chat_ui.spec.md",
+        "id": "hgs_brain.chat_ui.loading_state",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The UI shall indicate that a query is in progress while waiting for a response.",
+        "subject_id": "hgs_brain.chat_ui"
+      },
+      {
+        "file": ".spec/specs/chat_ui.spec.md",
+        "id": "hgs_brain.chat_ui.question_input",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The UI shall provide a text input for the user to enter a natural language question.",
+        "subject_id": "hgs_brain.chat_ui"
+      },
+      {
+        "file": ".spec/specs/chat_ui.spec.md",
+        "id": "hgs_brain.chat_ui.segment_selector",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The UI shall allow the user to select a segment (work or personal) before submitting a question.",
+        "subject_id": "hgs_brain.chat_ui"
+      },
+      {
         "file": ".spec/specs/ingestion.spec.md",
         "id": "hgs_brain.ingestion.accepts_markdown",
         "priority": "must",
@@ -157,6 +189,22 @@
     "scenarios": [],
     "subjects": [
       {
+        "file": ".spec/specs/chat_ui.spec.md",
+        "id": "hgs_brain.chat_ui",
+        "meta": {
+          "decisions": null,
+          "id": "hgs_brain.chat_ui",
+          "kind": "feature",
+          "status": "active",
+          "summary": "LiveView page for asking questions against the knowledge base, with segment selection and answer display.",
+          "surface": [
+            "lib/hgs_brain_web/live/chat_live.ex"
+          ],
+          "verification_minimum_strength": null
+        },
+        "title": "Chat UI"
+      },
+      {
         "file": ".spec/specs/ingestion.spec.md",
         "id": "hgs_brain.ingestion",
         "meta": {
@@ -238,6 +286,18 @@
     "verifications": [
       {
         "covers": [
+          "hgs_brain.chat_ui.segment_selector",
+          "hgs_brain.chat_ui.question_input",
+          "hgs_brain.chat_ui.answer_display",
+          "hgs_brain.chat_ui.loading_state"
+        ],
+        "file": ".spec/specs/chat_ui.spec.md",
+        "kind": "source_file",
+        "subject_id": "hgs_brain.chat_ui",
+        "target": "lib/hgs_brain_web/live/chat_live.ex"
+      },
+      {
+        "covers": [
           "hgs_brain.ingestion.accepts_markdown",
           "hgs_brain.ingestion.segment_tagged",
           "hgs_brain.ingestion.embedded",
@@ -312,13 +372,57 @@
     "decisions": 2,
     "exceptions": 1,
     "findings": 0,
-    "requirements": 14,
+    "requirements": 18,
     "scenarios": 0,
-    "subjects": 4,
-    "verifications": 7
+    "subjects": 5,
+    "verifications": 8
   },
   "verification": {
     "claims": [
+      {
+        "cover_id": "hgs_brain.chat_ui.answer_display",
+        "file": ".spec/specs/chat_ui.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.chat_ui",
+        "target": "lib/hgs_brain_web/live/chat_live.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.chat_ui.loading_state",
+        "file": ".spec/specs/chat_ui.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.chat_ui",
+        "target": "lib/hgs_brain_web/live/chat_live.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.chat_ui.question_input",
+        "file": ".spec/specs/chat_ui.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.chat_ui",
+        "target": "lib/hgs_brain_web/live/chat_live.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.chat_ui.segment_selector",
+        "file": ".spec/specs/chat_ui.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.chat_ui",
+        "target": "lib/hgs_brain_web/live/chat_live.ex",
+        "verification_index": 0
+      },
       {
         "cover_id": "hgs_brain.ingestion.accepts_markdown",
         "file": ".spec/specs/ingestion.spec.md",
@@ -457,12 +561,12 @@
     "strength_summary": {
       "claimed": 2,
       "executed": 0,
-      "linked": 10
+      "linked": 14
     },
     "threshold_failures": 0
   },
   "workspace": {
     "decision_count": 2,
-    "spec_count": 4
+    "spec_count": 5
   }
 }
