@@ -92,7 +92,14 @@ defmodule HgsBrain.MixProject do
         "esbuild hgs_brain --minify",
         "phx.digest"
       ],
-      precommit: ["compile --warning-as-errors", "deps.unlock --unused", "format", "test"]
+      precommit: [
+        "compile --warning-as-errors",
+        "deps.unlock --unused",
+        "format",
+        "test",
+        "spec.check",
+        "spec.diffcheck"
+      ]
     ]
   end
 end
