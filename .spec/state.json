@@ -22,6 +22,22 @@
         "id": "hgs_brain.decision.pgvector_storage",
         "status": "accepted",
         "title": "Use pgvector via Existing Postgres"
+      },
+      {
+        "affects": [
+          "hgs_brain.retrieval",
+          "hgs_brain.chat_ui",
+          "hgs_brain.source_transparency.retrieval_context",
+          "hgs_brain.source_transparency.citation_ui",
+          "hgs_brain.source_transparency.weak_grounding",
+          "hgs_brain.source_transparency.search_consistency",
+          "hgs_brain.source_transparency.relevance_signal"
+        ],
+        "date": "2026-03-21",
+        "file": ".spec/decisions/hgs_brain.decision.source_transparency_at_retrieval_boundary.md",
+        "id": "hgs_brain.decision.source_transparency_at_retrieval_boundary",
+        "status": "accepted",
+        "title": "Enrich Source Metadata at the Retrieval Boundary"
       }
     ]
   },
@@ -38,6 +54,43 @@
         "id": "hgs_brain.package_bootstrap_waiver",
         "reason": "Package-level requirements are covered by the ingestion and retrieval feature specs. Verification will be added as those features are implemented.",
         "subject_id": "hgs_brain"
+      },
+      {
+        "covers": [
+          "hgs_brain.source_transparency.answer_citations",
+          "hgs_brain.source_transparency.segment_visibility"
+        ],
+        "file": ".spec/specs/source_transparency.citation_ui.spec.md",
+        "id": "hgs_brain.source_transparency.citation_ui.unimplemented",
+        "reason": "Feature not yet implemented. Verification targets will carry covers markers once the UI is built.",
+        "subject_id": "hgs_brain.source_transparency.citation_ui"
+      },
+      {
+        "covers": [
+          "hgs_brain.source_transparency.relevance_signal"
+        ],
+        "file": ".spec/specs/source_transparency.relevance_signal.spec.md",
+        "id": "hgs_brain.source_transparency.relevance_signal.unimplemented",
+        "reason": "Feature not yet implemented. Verification targets will carry covers markers once the retrieval and UI work is complete.",
+        "subject_id": "hgs_brain.source_transparency.relevance_signal"
+      },
+      {
+        "covers": [
+          "hgs_brain.source_transparency.search_consistency"
+        ],
+        "file": ".spec/specs/source_transparency.search_consistency.spec.md",
+        "id": "hgs_brain.source_transparency.search_consistency.unimplemented",
+        "reason": "Feature not yet implemented. Verification targets will carry covers markers once the UI is built.",
+        "subject_id": "hgs_brain.source_transparency.search_consistency"
+      },
+      {
+        "covers": [
+          "hgs_brain.source_transparency.empty_citations"
+        ],
+        "file": ".spec/specs/source_transparency.weak_grounding.spec.md",
+        "id": "hgs_brain.source_transparency.weak_grounding.unimplemented",
+        "reason": "Feature not yet implemented. Verification targets will carry covers markers once the UI is built.",
+        "subject_id": "hgs_brain.source_transparency.weak_grounding"
       }
     ],
     "requirements": [
@@ -147,6 +200,14 @@
       },
       {
         "file": ".spec/specs/retrieval.spec.md",
+        "id": "hgs_brain.retrieval.enriched_sources",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The system shall enrich each retrieved passage with segment, source file path, excerpt text, relevance score, and chunk index before returning it to callers.",
+        "subject_id": "hgs_brain.retrieval"
+      },
+      {
+        "file": ".spec/specs/retrieval.spec.md",
         "id": "hgs_brain.retrieval.rag_answer",
         "priority": "must",
         "stability": "stable",
@@ -160,6 +221,70 @@
         "stability": "stable",
         "statement": "Retrieval shall return only content belonging to the specified segment; work and personal knowledge shall not mix.",
         "subject_id": "hgs_brain.retrieval"
+      },
+      {
+        "file": ".spec/specs/source_transparency.citation_ui.spec.md",
+        "id": "hgs_brain.source_transparency.answer_citations",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The system shall display supporting citations alongside each AI-generated answer.",
+        "subject_id": "hgs_brain.source_transparency.citation_ui"
+      },
+      {
+        "file": ".spec/specs/source_transparency.citation_ui.spec.md",
+        "id": "hgs_brain.source_transparency.segment_visibility",
+        "priority": "should",
+        "stability": "stable",
+        "statement": "Citations shall make the active segment visible so users can confirm the answer was drawn from the intended knowledge scope.",
+        "subject_id": "hgs_brain.source_transparency.citation_ui"
+      },
+      {
+        "file": ".spec/specs/source_transparency.relevance_signal.spec.md",
+        "id": "hgs_brain.source_transparency.relevance_signal",
+        "priority": "should",
+        "stability": "evolving",
+        "statement": "The system shall expose a lightweight relevance or confidence signal for each supporting citation, such as retrieval score or rank.",
+        "subject_id": "hgs_brain.source_transparency.relevance_signal"
+      },
+      {
+        "file": ".spec/specs/source_transparency.retrieval_context.spec.md",
+        "id": "hgs_brain.source_transparency.multiple_sources",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "When an answer is based on multiple retrieved passages, the retrieval layer shall return them as a list of distinct source entries.",
+        "subject_id": "hgs_brain.source_transparency.retrieval_context"
+      },
+      {
+        "file": ".spec/specs/source_transparency.retrieval_context.spec.md",
+        "id": "hgs_brain.source_transparency.source_excerpt",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "Each citation shall carry the retrieved passage text used as supporting context.",
+        "subject_id": "hgs_brain.source_transparency.retrieval_context"
+      },
+      {
+        "file": ".spec/specs/source_transparency.retrieval_context.spec.md",
+        "id": "hgs_brain.source_transparency.source_metadata",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "Each citation shall include enough metadata to identify its origin, including source file path or title and segment.",
+        "subject_id": "hgs_brain.source_transparency.retrieval_context"
+      },
+      {
+        "file": ".spec/specs/source_transparency.search_consistency.spec.md",
+        "id": "hgs_brain.source_transparency.search_consistency",
+        "priority": "should",
+        "stability": "stable",
+        "statement": "Search mode shall present source metadata in a format consistent with answer citations.",
+        "subject_id": "hgs_brain.source_transparency.search_consistency"
+      },
+      {
+        "file": ".spec/specs/source_transparency.weak_grounding.spec.md",
+        "id": "hgs_brain.source_transparency.empty_citations",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "If the system cannot provide supporting sources for an answer, it shall clearly indicate that the answer is weakly grounded or unavailable.",
+        "subject_id": "hgs_brain.source_transparency.weak_grounding"
       },
       {
         "file": ".spec/specs/spec_system.spec.md",
@@ -194,7 +319,60 @@
         "subject_id": "spec.system"
       }
     ],
-    "scenarios": [],
+    "scenarios": [
+      {
+        "covers": [
+          "hgs_brain.source_transparency.answer_citations",
+          "hgs_brain.source_transparency.segment_visibility"
+        ],
+        "file": ".spec/specs/source_transparency.citation_ui.spec.md",
+        "given": [
+          "The user asks a question in ask mode and relevant passages are retrieved"
+        ],
+        "id": "hgs_brain.source_transparency.ask_with_sources",
+        "subject_id": "hgs_brain.source_transparency.citation_ui",
+        "then": [
+          "The UI shows the synthesized answer and a Sources section listing each citation with file path, segment, and excerpt"
+        ],
+        "when": [
+          "The answer is rendered"
+        ]
+      },
+      {
+        "covers": [
+          "hgs_brain.source_transparency.search_consistency"
+        ],
+        "file": ".spec/specs/source_transparency.search_consistency.spec.md",
+        "given": [
+          "The user searches in search mode"
+        ],
+        "id": "hgs_brain.source_transparency.search_with_metadata",
+        "subject_id": "hgs_brain.source_transparency.search_consistency",
+        "then": [
+          "Each result includes source-identifying metadata and an excerpt, rendered with the same layout used for ask-mode citations"
+        ],
+        "when": [
+          "Matching passages are returned"
+        ]
+      },
+      {
+        "covers": [
+          "hgs_brain.source_transparency.empty_citations"
+        ],
+        "file": ".spec/specs/source_transparency.weak_grounding.spec.md",
+        "given": [
+          "The user asks a question but retrieval returns weak or no supporting passages"
+        ],
+        "id": "hgs_brain.source_transparency.no_grounding",
+        "subject_id": "hgs_brain.source_transparency.weak_grounding",
+        "then": [
+          "The UI displays a clear \"No supporting sources available\" state rather than an empty Sources section or an unsupported answer"
+        ],
+        "when": [
+          "The response is rendered"
+        ]
+      }
+    ],
     "subjects": [
       {
         "file": ".spec/specs/chat_ui.spec.md",
@@ -204,7 +382,7 @@
           "id": "hgs_brain.chat_ui",
           "kind": "feature",
           "status": "active",
-          "summary": "LiveView page for querying the knowledge base, with segment selection, ask/search mode toggle, and result display.",
+          "summary": "LiveView page for querying the knowledge base, with segment selection, ask/search mode toggle (defaulting to ask), and result display. Results are fetched asynchronously and rendered on completion.",
           "surface": [
             "lib/hgs_brain_web/live/chat_live.ex"
           ],
@@ -263,13 +441,94 @@
           "id": "hgs_brain.retrieval",
           "kind": "feature",
           "status": "active",
-          "summary": "Accepts natural language questions scoped to a segment and returns AI-generated answers from retrieved document context via arcana.",
+          "summary": "Accepts natural language questions scoped to a segment and returns AI-generated answers alongside enriched source maps containing passage text, file path, segment, score, and chunk position.",
           "surface": [
             "lib/hgs_brain/retrieval.ex"
           ],
           "verification_minimum_strength": null
         },
         "title": "Retrieval"
+      },
+      {
+        "file": ".spec/specs/source_transparency.citation_ui.spec.md",
+        "id": "hgs_brain.source_transparency.citation_ui",
+        "meta": {
+          "decisions": null,
+          "id": "hgs_brain.source_transparency.citation_ui",
+          "kind": "feature",
+          "status": "proposed",
+          "summary": "The chat UI displays a Sources list beneath each AI-generated answer, showing file path, segment, and excerpt for each supporting passage.",
+          "surface": [
+            "lib/hgs_brain_web/live/chat_live.ex"
+          ],
+          "verification_minimum_strength": null
+        },
+        "title": "Source Transparency — Citation UI"
+      },
+      {
+        "file": ".spec/specs/source_transparency.relevance_signal.spec.md",
+        "id": "hgs_brain.source_transparency.relevance_signal",
+        "meta": {
+          "decisions": null,
+          "id": "hgs_brain.source_transparency.relevance_signal",
+          "kind": "feature",
+          "status": "proposed",
+          "summary": "Each supporting citation carries a lightweight relevance or confidence signal — such as retrieval score or rank — so users can judge how strongly a passage supported the answer.",
+          "surface": [
+            "lib/hgs_brain/retrieval.ex",
+            "lib/hgs_brain_web/live/chat_live.ex"
+          ],
+          "verification_minimum_strength": null
+        },
+        "title": "Source Transparency — Relevance Signal"
+      },
+      {
+        "file": ".spec/specs/source_transparency.retrieval_context.spec.md",
+        "id": "hgs_brain.source_transparency.retrieval_context",
+        "meta": {
+          "decisions": null,
+          "id": "hgs_brain.source_transparency.retrieval_context",
+          "kind": "feature",
+          "status": "proposed",
+          "summary": "The retrieval layer surfaces source metadata, excerpt text, and score for each retrieved passage so the UI can present grounded citations.",
+          "surface": [
+            "lib/hgs_brain/retrieval.ex"
+          ],
+          "verification_minimum_strength": null
+        },
+        "title": "Source Transparency — Retrieval Context"
+      },
+      {
+        "file": ".spec/specs/source_transparency.search_consistency.spec.md",
+        "id": "hgs_brain.source_transparency.search_consistency",
+        "meta": {
+          "decisions": null,
+          "id": "hgs_brain.source_transparency.search_consistency",
+          "kind": "feature",
+          "status": "proposed",
+          "summary": "Search mode results display source metadata and excerpts in a format consistent with ask-mode citations, giving users a uniform inspection experience across both modes.",
+          "surface": [
+            "lib/hgs_brain_web/live/chat_live.ex"
+          ],
+          "verification_minimum_strength": null
+        },
+        "title": "Source Transparency — Search Mode Consistency"
+      },
+      {
+        "file": ".spec/specs/source_transparency.weak_grounding.spec.md",
+        "id": "hgs_brain.source_transparency.weak_grounding",
+        "meta": {
+          "decisions": null,
+          "id": "hgs_brain.source_transparency.weak_grounding",
+          "kind": "feature",
+          "status": "proposed",
+          "summary": "When retrieval returns weak or no supporting passages, the UI presents a clear grounding-unavailable state instead of implying a well-supported answer.",
+          "surface": [
+            "lib/hgs_brain_web/live/chat_live.ex"
+          ],
+          "verification_minimum_strength": null
+        },
+        "title": "Source Transparency — Weak Grounding State"
       },
       {
         "file": ".spec/specs/spec_system.spec.md",
@@ -347,7 +606,8 @@
         "covers": [
           "hgs_brain.retrieval.accepts_query",
           "hgs_brain.retrieval.scoped",
-          "hgs_brain.retrieval.rag_answer"
+          "hgs_brain.retrieval.rag_answer",
+          "hgs_brain.retrieval.enriched_sources"
         ],
         "file": ".spec/specs/retrieval.spec.md",
         "kind": "source_file",
@@ -358,11 +618,34 @@
         "covers": [
           "hgs_brain.retrieval.accepts_query",
           "hgs_brain.retrieval.scoped",
-          "hgs_brain.retrieval.rag_answer"
+          "hgs_brain.retrieval.rag_answer",
+          "hgs_brain.retrieval.enriched_sources"
         ],
         "file": ".spec/specs/retrieval.spec.md",
         "kind": "command",
         "subject_id": "hgs_brain.retrieval",
+        "target": "mix test test/hgs_brain/retrieval_test.exs"
+      },
+      {
+        "covers": [
+          "hgs_brain.source_transparency.source_metadata",
+          "hgs_brain.source_transparency.source_excerpt",
+          "hgs_brain.source_transparency.multiple_sources"
+        ],
+        "file": ".spec/specs/source_transparency.retrieval_context.spec.md",
+        "kind": "source_file",
+        "subject_id": "hgs_brain.source_transparency.retrieval_context",
+        "target": "lib/hgs_brain/retrieval.ex"
+      },
+      {
+        "covers": [
+          "hgs_brain.source_transparency.source_metadata",
+          "hgs_brain.source_transparency.source_excerpt",
+          "hgs_brain.source_transparency.multiple_sources"
+        ],
+        "file": ".spec/specs/source_transparency.retrieval_context.spec.md",
+        "kind": "command",
+        "subject_id": "hgs_brain.source_transparency.retrieval_context",
         "target": "mix test test/hgs_brain/retrieval_test.exs"
       },
       {
@@ -415,13 +698,13 @@
   "specification_version": "1.0",
   "summary": {
     "decision_parse_errors": 0,
-    "decisions": 2,
-    "exceptions": 1,
+    "decisions": 3,
+    "exceptions": 5,
     "findings": 0,
-    "requirements": 19,
-    "scenarios": 0,
-    "subjects": 5,
-    "verifications": 11
+    "requirements": 28,
+    "scenarios": 3,
+    "subjects": 10,
+    "verifications": 13
   },
   "verification": {
     "claims": [
@@ -635,6 +918,17 @@
         "verification_index": 0
       },
       {
+        "cover_id": "hgs_brain.retrieval.enriched_sources",
+        "file": ".spec/specs/retrieval.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.retrieval",
+        "target": "lib/hgs_brain/retrieval.ex",
+        "verification_index": 0
+      },
+      {
         "cover_id": "hgs_brain.retrieval.rag_answer",
         "file": ".spec/specs/retrieval.spec.md",
         "kind": "source_file",
@@ -668,6 +962,17 @@
         "verification_index": 1
       },
       {
+        "cover_id": "hgs_brain.retrieval.enriched_sources",
+        "file": ".spec/specs/retrieval.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "hgs_brain.retrieval",
+        "target": "mix test test/hgs_brain/retrieval_test.exs",
+        "verification_index": 1
+      },
+      {
         "cover_id": "hgs_brain.retrieval.rag_answer",
         "file": ".spec/specs/retrieval.spec.md",
         "kind": "command",
@@ -686,6 +991,72 @@
         "required_strength": "claimed",
         "strength": "claimed",
         "subject_id": "hgs_brain.retrieval",
+        "target": "mix test test/hgs_brain/retrieval_test.exs",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.source_transparency.multiple_sources",
+        "file": ".spec/specs/source_transparency.retrieval_context.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.source_transparency.retrieval_context",
+        "target": "lib/hgs_brain/retrieval.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.source_transparency.source_excerpt",
+        "file": ".spec/specs/source_transparency.retrieval_context.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.source_transparency.retrieval_context",
+        "target": "lib/hgs_brain/retrieval.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.source_transparency.source_metadata",
+        "file": ".spec/specs/source_transparency.retrieval_context.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.source_transparency.retrieval_context",
+        "target": "lib/hgs_brain/retrieval.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.source_transparency.multiple_sources",
+        "file": ".spec/specs/source_transparency.retrieval_context.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "hgs_brain.source_transparency.retrieval_context",
+        "target": "mix test test/hgs_brain/retrieval_test.exs",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.source_transparency.source_excerpt",
+        "file": ".spec/specs/source_transparency.retrieval_context.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "hgs_brain.source_transparency.retrieval_context",
+        "target": "mix test test/hgs_brain/retrieval_test.exs",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.source_transparency.source_metadata",
+        "file": ".spec/specs/source_transparency.retrieval_context.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "claimed",
+        "subject_id": "hgs_brain.source_transparency.retrieval_context",
         "target": "mix test test/hgs_brain/retrieval_test.exs",
         "verification_index": 1
       },
@@ -748,14 +1119,14 @@
     "cli_minimum_strength": null,
     "default_minimum_strength": "claimed",
     "strength_summary": {
-      "claimed": 14,
+      "claimed": 18,
       "executed": 0,
-      "linked": 15
+      "linked": 19
     },
     "threshold_failures": 0
   },
   "workspace": {
-    "decision_count": 2,
-    "spec_count": 5
+    "decision_count": 3,
+    "spec_count": 10
   }
 }

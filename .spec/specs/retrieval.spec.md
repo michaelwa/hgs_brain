@@ -1,12 +1,12 @@
 # Retrieval
 
-RAG-powered Q&A retrieval.
+RAG-powered Q&A retrieval with enriched source context.
 
 ```spec-meta
 id: hgs_brain.retrieval
 kind: feature
 status: active
-summary: Accepts natural language questions scoped to a segment and returns AI-generated answers from retrieved document context via arcana.
+summary: Accepts natural language questions scoped to a segment and returns AI-generated answers alongside enriched source maps containing passage text, file path, segment, score, and chunk position.
 surface:
   - lib/hgs_brain/retrieval.ex
 decisions:
@@ -29,6 +29,10 @@ decisions:
   statement: The system shall return an AI-generated answer assembled from the most relevant retrieved passages.
   priority: must
   stability: stable
+- id: hgs_brain.retrieval.enriched_sources
+  statement: The system shall enrich each retrieved passage with segment, source file path, excerpt text, relevance score, and chunk index before returning it to callers.
+  priority: must
+  stability: stable
 ```
 
 ## Verification
@@ -40,10 +44,12 @@ decisions:
     - hgs_brain.retrieval.accepts_query
     - hgs_brain.retrieval.scoped
     - hgs_brain.retrieval.rag_answer
+    - hgs_brain.retrieval.enriched_sources
 - kind: command
   target: mix test test/hgs_brain/retrieval_test.exs
   covers:
     - hgs_brain.retrieval.accepts_query
     - hgs_brain.retrieval.scoped
     - hgs_brain.retrieval.rag_answer
+    - hgs_brain.retrieval.enriched_sources
 ```

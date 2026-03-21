@@ -1,5 +1,10 @@
 # Package
 
+## Vision
+
+The strongest version of this app is not "ChatGPT over my markdown."
+It is: "a segmented, trustworthy knowledge workspace that helps me capture, retrieve, synthesize, and revisit what I know."
+
 Personal second brain application with work/personal segmentation, markdown ingestion, and RAG-powered Q&A.
 
 ```spec-meta

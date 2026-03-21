@@ -6,7 +6,7 @@ Simple LiveView Q&A interface.
 id: hgs_brain.chat_ui
 kind: feature
 status: active
-summary: LiveView page for querying the knowledge base, with segment selection, ask/search mode toggle, and result display.
+summary: LiveView page for querying the knowledge base, with segment selection, ask/search mode toggle (defaulting to ask), and result display. Results are fetched asynchronously and rendered on completion.
 surface:
   - lib/hgs_brain_web/live/chat_live.ex
 ```
