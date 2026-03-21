@@ -26,7 +26,12 @@ defmodule HgsBrainWeb.ChatLive do
   @impl true
   def handle_event("set_segment", %{"segment" => segment}, socket) do
     {:noreply,
-     assign(socket, segment: String.to_existing_atom(segment), answer: nil, results: [], error: nil)}
+     assign(socket,
+       segment: String.to_existing_atom(segment),
+       answer: nil,
+       results: [],
+       error: nil
+     )}
   end
 
   def handle_event("set_mode", %{"mode" => mode}, socket) do
@@ -164,7 +169,12 @@ defmodule HgsBrainWeb.ChatLive do
 
       <%!-- Loading indicator --%>
       <div :if={@loading} class="flex items-center gap-2 text-sm text-zinc-500">
-        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <svg
+          class="animate-spin h-4 w-4"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
         </svg>
@@ -181,14 +191,20 @@ defmodule HgsBrainWeb.ChatLive do
 
       <%!-- Search results --%>
       <div :if={@results != []} class="space-y-3">
-        <div :for={result <- @results} class="rounded-lg bg-zinc-50 border border-zinc-200 px-5 py-4 space-y-2">
+        <div
+          :for={result <- @results}
+          class="rounded-lg bg-zinc-50 border border-zinc-200 px-5 py-4 space-y-2"
+        >
           <p class="text-sm text-zinc-700 leading-relaxed">{result.text}</p>
           <p class="text-xs text-zinc-400">Score: {Float.round(result.score, 3)}</p>
         </div>
       </div>
 
       <%!-- Error --%>
-      <div :if={@error} class="rounded-lg bg-red-50 border border-red-200 px-5 py-4 text-sm text-red-700">
+      <div
+        :if={@error}
+        class="rounded-lg bg-red-50 border border-red-200 px-5 py-4 text-sm text-red-700"
+      >
         {@error}
       </div>
     </div>

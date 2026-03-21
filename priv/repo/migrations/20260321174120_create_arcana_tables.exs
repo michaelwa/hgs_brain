@@ -24,7 +24,9 @@ defmodule HgsBrain.Repo.Migrations.CreateArcanaTables do
       add :status, :string, default: "pending"
       add :error, :text
       add :chunk_count, :integer, default: 0
-      add :collection_id, references(:arcana_collections, type: :binary_id, on_delete: :nilify_all)
+
+      add :collection_id,
+          references(:arcana_collections, type: :binary_id, on_delete: :nilify_all)
 
       timestamps()
     end
@@ -61,7 +63,10 @@ defmodule HgsBrain.Repo.Migrations.CreateArcanaTables do
     end
 
     create table(:arcana_evaluation_test_case_chunks, primary_key: false) do
-      add :test_case_id, references(:arcana_evaluation_test_cases, type: :uuid, on_delete: :delete_all), null: false
+      add :test_case_id,
+          references(:arcana_evaluation_test_cases, type: :uuid, on_delete: :delete_all),
+          null: false
+
       add :chunk_id, references(:arcana_chunks, type: :uuid, on_delete: :delete_all), null: false
     end
 
