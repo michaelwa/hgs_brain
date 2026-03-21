@@ -48,6 +48,7 @@ decisions:
     - hgs_brain.retrieval.enriched_sources
 - kind: command
   target: mix test test/hgs_brain/retrieval_test.exs
+  execute: true
   covers:
     - hgs_brain.retrieval.accepts_query
     - hgs_brain.retrieval.scoped
