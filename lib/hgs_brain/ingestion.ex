@@ -15,6 +15,13 @@ defmodule HgsBrain.Ingestion do
   <!-- covers: hgs_brain.ingestion_health.failures_visible -->
   <!-- covers: hgs_brain.ingestion_health.source_change_detected -->
   <!-- covers: hgs_brain.ingestion_health.reprocessing_supported -->
+  <!-- covers: hgs_brain.ingestion_source_metadata.origin_metadata -->
+  <!-- covers: hgs_brain.ingestion_source_metadata.display_name -->
+  <!-- covers: hgs_brain.ingestion_source_metadata.segment_recorded -->
+  <!-- covers: hgs_brain.ingestion_source_metadata.timestamps_recorded -->
+  <!-- covers: hgs_brain.ingestion_source_metadata.content_fingerprint -->
+  <!-- covers: hgs_brain.ingestion_source_metadata.source_chunk_separation -->
+  <!-- covers: hgs_brain.ingestion_source_metadata.frontmatter_preserved -->
   """
 
   import Ecto.Query
@@ -38,13 +45,14 @@ defmodule HgsBrain.Ingestion do
   @spec ingest_file(Path.t(), segment()) :: {:ok, Arcana.Document.t()} | {:error, term()}
   def ingest_file(path, segment) when segment in [:work, :personal] do
     collection = collection_name(segment)
+    {title, frontmatter} = extract_source_metadata(path)
 
     result =
       with :ok <- delete_existing(path, collection) do
         @arcana_client.ingest_file(path, repo: Repo, collection: collection)
       end
 
-    record_health(path, segment, result)
+    record_health(path, segment, result, title: title, frontmatter: frontmatter)
     result
   end
 
@@ -109,27 +117,32 @@ defmodule HgsBrain.Ingestion do
     end
   end
 
-  defp record_health(path, segment, {:ok, _}) do
+  defp record_health(path, segment, {:ok, doc}, opts) do
     attrs = %{
       file_path: path,
       segment: Atom.to_string(segment),
       status: :ok,
       error_reason: nil,
       file_hash: current_hash(path),
-      ingested_at: DateTime.utc_now() |> DateTime.truncate(:second)
+      ingested_at: DateTime.utc_now() |> DateTime.truncate(:second),
+      document_id: Map.get(doc, :id),
+      title: opts[:title],
+      frontmatter: opts[:frontmatter]
     }
 
     upsert_health(path, segment, attrs)
   end
 
-  defp record_health(path, segment, {:error, reason}) do
+  defp record_health(path, segment, {:error, reason}, opts) do
     attrs = %{
       file_path: path,
       segment: Atom.to_string(segment),
       status: :error,
       error_reason: inspect(reason),
       file_hash: nil,
-      ingested_at: nil
+      ingested_at: nil,
+      title: opts[:title],
+      frontmatter: opts[:frontmatter]
     }
 
     upsert_health(path, segment, attrs)
@@ -147,6 +160,45 @@ defmodule HgsBrain.Ingestion do
         |> IngestionRecord.changeset(attrs)
         |> Repo.update!()
     end
+  end
+
+  defp extract_source_metadata(path) do
+    case File.read(path) do
+      {:ok, content} ->
+        frontmatter = parse_frontmatter(content)
+        title = (frontmatter && Map.get(frontmatter, "title")) || derive_title(path)
+        {title, frontmatter}
+
+      {:error, _} ->
+        {derive_title(path), nil}
+    end
+  end
+
+  defp parse_frontmatter(content) do
+    case Regex.run(~r/\A---\n(.*?)\n---(\n|\z)/s, content, capture: :all_but_first) do
+      [yaml | _] -> parse_yaml_kv(yaml)
+      nil -> nil
+    end
+  end
+
+  defp parse_yaml_kv(yaml) do
+    result =
+      yaml
+      |> String.split("\n")
+      |> Enum.reduce(%{}, fn line, acc ->
+        case Regex.run(~r/^([^:]+):\s*(.+)$/, String.trim(line)) do
+          [_, key, value] -> Map.put(acc, String.trim(key), String.trim(value))
+          _ -> acc
+        end
+      end)
+
+    if map_size(result) == 0, do: nil, else: result
+  end
+
+  defp derive_title(path) do
+    base = Path.basename(path, Path.extname(path))
+    humanized = String.replace(base, ~r/[-_]+/, " ")
+    String.upcase(String.first(humanized)) <> String.slice(humanized, 1..-1//1)
   end
 
   defp current_hash(path) do

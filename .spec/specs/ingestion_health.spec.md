@@ -9,9 +9,11 @@ status: active
 summary: The system tracks ingestion status, recency, failures, and source changes so users can inspect ingestion health and reprocess sources when needed.
 surface:
   - lib/hgs_brain/ingestion.ex
+  - lib/hgs_brain/ingestion_record.ex
 decisions:
   - hgs_brain.decision.arcana_for_rag
   - hgs_brain.decision.pgvector_storage
+  - hgs_brain.decision.embedder_lifecycle
 ```
 
 ## Requirements

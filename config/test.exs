@@ -27,6 +27,7 @@ config :hgs_brain, HgsBrain.Mailer, adapter: Swoosh.Adapters.Test
 config :swoosh, :api_client, false
 
 config :hgs_brain, :arcana_client, HgsBrain.MockArcanaClient
+config :hgs_brain, :start_embedder, false
 
 # Print only warnings and errors during test
 config :logger, level: :warning

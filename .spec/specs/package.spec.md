@@ -20,6 +20,7 @@ decisions:
   - hgs_brain.decision.arcana_for_rag
   - hgs_brain.decision.pgvector_storage
   - hgs_brain.decision.source_transparency_at_retrieval_boundary
+  - hgs_brain.decision.embedder_lifecycle
 ```
 
 ## Requirements

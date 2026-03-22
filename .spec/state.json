@@ -15,6 +15,17 @@
       },
       {
         "affects": [
+          "hgs_brain",
+          "hgs_brain.ingestion"
+        ],
+        "date": "2026-03-22",
+        "file": ".spec/decisions/hgs_brain.decision.embedder_lifecycle.md",
+        "id": "hgs_brain.decision.embedder_lifecycle",
+        "status": "accepted",
+        "title": "Conditionally Start Bumblebee Embedder by Environment"
+      },
+      {
+        "affects": [
           "hgs_brain.ingestion",
           "hgs_brain.retrieval"
         ],
@@ -193,6 +204,62 @@
         "stability": "evolving",
         "statement": "The system shall record an ingestion status for each ingested source so successful and failed ingestion attempts are distinguishable.",
         "subject_id": "hgs_brain.ingestion_health"
+      },
+      {
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "id": "hgs_brain.ingestion_source_metadata.content_fingerprint",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "The system shall record a content fingerprint for each ingested source so content changes can be detected independently of source path changes.",
+        "subject_id": "hgs_brain.ingestion_source_metadata"
+      },
+      {
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "id": "hgs_brain.ingestion_source_metadata.display_name",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "The system shall record a source title or derived display name suitable for user-facing presentation.",
+        "subject_id": "hgs_brain.ingestion_source_metadata"
+      },
+      {
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "id": "hgs_brain.ingestion_source_metadata.frontmatter_preserved",
+        "priority": "should",
+        "stability": "evolving",
+        "statement": "When structured markdown metadata is present, the system shall preserve it as source-level metadata.",
+        "subject_id": "hgs_brain.ingestion_source_metadata"
+      },
+      {
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "id": "hgs_brain.ingestion_source_metadata.origin_metadata",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "The system shall preserve source-level origin metadata for each ingested source, including source path when available.",
+        "subject_id": "hgs_brain.ingestion_source_metadata"
+      },
+      {
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "id": "hgs_brain.ingestion_source_metadata.segment_recorded",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The system shall record the segment associated with each ingested source as source-level metadata.",
+        "subject_id": "hgs_brain.ingestion_source_metadata"
+      },
+      {
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "id": "hgs_brain.ingestion_source_metadata.source_chunk_separation",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The system shall distinguish source identity from chunk identity so multiple chunks can be traced back to a single source record.",
+        "subject_id": "hgs_brain.ingestion_source_metadata"
+      },
+      {
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "id": "hgs_brain.ingestion_source_metadata.timestamps_recorded",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "The system shall record source-level timestamps sufficient to distinguish initial ingestion from later updates.",
+        "subject_id": "hgs_brain.ingestion_source_metadata"
       },
       {
         "file": ".spec/specs/retrieval.spec.md",
@@ -421,6 +488,79 @@
       },
       {
         "covers": [
+          "hgs_brain.ingestion_source_metadata.content_fingerprint",
+          "hgs_brain.ingestion_source_metadata.timestamps_recorded"
+        ],
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "given": [
+          "A source has been ingested",
+          "Its content changes before a later ingestion"
+        ],
+        "id": "hgs_brain.ingestion_source_metadata.changed_content_detected",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "then": [
+          "The source fingerprint can distinguish the newer content from the earlier ingestion state"
+        ],
+        "when": [
+          "The source metadata is evaluated"
+        ]
+      },
+      {
+        "covers": [
+          "hgs_brain.ingestion_source_metadata.source_chunk_separation"
+        ],
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "given": [
+          "A single source is chunked into multiple embeddings"
+        ],
+        "id": "hgs_brain.ingestion_source_metadata.chunks_trace_to_source",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "then": [
+          "Each chunk can be traced back to one source-level identity"
+        ],
+        "when": [
+          "Retrieved chunks are inspected"
+        ]
+      },
+      {
+        "covers": [
+          "hgs_brain.ingestion_source_metadata.frontmatter_preserved"
+        ],
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "given": [
+          "A markdown source includes structured frontmatter metadata"
+        ],
+        "id": "hgs_brain.ingestion_source_metadata.frontmatter_retained",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "then": [
+          "The structured metadata is preserved at the source level"
+        ],
+        "when": [
+          "The source is ingested"
+        ]
+      },
+      {
+        "covers": [
+          "hgs_brain.ingestion_source_metadata.origin_metadata",
+          "hgs_brain.ingestion_source_metadata.display_name",
+          "hgs_brain.ingestion_source_metadata.segment_recorded",
+          "hgs_brain.ingestion_source_metadata.timestamps_recorded"
+        ],
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "given": [
+          "A markdown source is ingested successfully"
+        ],
+        "id": "hgs_brain.ingestion_source_metadata.markdown_source_recorded",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "then": [
+          "Origin metadata, display metadata, segment, and source-level timestamps are available"
+        ],
+        "when": [
+          "The source record is inspected"
+        ]
+      },
+      {
+        "covers": [
           "hgs_brain.source_transparency.answer_citations",
           "hgs_brain.source_transparency.segment_visibility",
           "hgs_brain.source_transparency.citation_fields"
@@ -524,7 +664,8 @@
         "meta": {
           "decisions": [
             "hgs_brain.decision.arcana_for_rag",
-            "hgs_brain.decision.pgvector_storage"
+            "hgs_brain.decision.pgvector_storage",
+            "hgs_brain.decision.embedder_lifecycle"
           ],
           "id": "hgs_brain.ingestion",
           "kind": "feature",
@@ -544,18 +685,39 @@
         "meta": {
           "decisions": [
             "hgs_brain.decision.arcana_for_rag",
-            "hgs_brain.decision.pgvector_storage"
+            "hgs_brain.decision.pgvector_storage",
+            "hgs_brain.decision.embedder_lifecycle"
           ],
           "id": "hgs_brain.ingestion_health",
           "kind": "feature",
           "status": "active",
           "summary": "The system tracks ingestion status, recency, failures, and source changes so users can inspect ingestion health and reprocess sources when needed.",
           "surface": [
-            "lib/hgs_brain/ingestion.ex"
+            "lib/hgs_brain/ingestion.ex",
+            "lib/hgs_brain/ingestion_record.ex"
           ],
           "verification_minimum_strength": null
         },
         "title": "Ingestion Health"
+      },
+      {
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "id": "hgs_brain.ingestion_source_metadata",
+        "meta": {
+          "decisions": [
+            "hgs_brain.decision.arcana_for_rag",
+            "hgs_brain.decision.pgvector_storage"
+          ],
+          "id": "hgs_brain.ingestion_source_metadata",
+          "kind": "feature",
+          "status": "active",
+          "summary": "The system preserves canonical source-level metadata for ingested knowledge so origin, display, change detection, and source-to-chunk traceability remain available across ingestion and retrieval workflows.",
+          "surface": [
+            "lib/hgs_brain/ingestion.ex"
+          ],
+          "verification_minimum_strength": null
+        },
+        "title": "Ingestion Source Metadata"
       },
       {
         "file": ".spec/specs/package.spec.md",
@@ -564,7 +726,8 @@
           "decisions": [
             "hgs_brain.decision.arcana_for_rag",
             "hgs_brain.decision.pgvector_storage",
-            "hgs_brain.decision.source_transparency_at_retrieval_boundary"
+            "hgs_brain.decision.source_transparency_at_retrieval_boundary",
+            "hgs_brain.decision.embedder_lifecycle"
           ],
           "id": "hgs_brain",
           "kind": "package",
@@ -796,6 +959,52 @@
       },
       {
         "covers": [
+          "hgs_brain.ingestion_source_metadata.origin_metadata",
+          "hgs_brain.ingestion_source_metadata.display_name",
+          "hgs_brain.ingestion_source_metadata.segment_recorded",
+          "hgs_brain.ingestion_source_metadata.timestamps_recorded",
+          "hgs_brain.ingestion_source_metadata.content_fingerprint",
+          "hgs_brain.ingestion_source_metadata.source_chunk_separation",
+          "hgs_brain.ingestion_source_metadata.frontmatter_preserved"
+        ],
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "source_file",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "lib/hgs_brain/ingestion.ex"
+      },
+      {
+        "covers": [
+          "hgs_brain.ingestion_source_metadata.origin_metadata",
+          "hgs_brain.ingestion_source_metadata.display_name",
+          "hgs_brain.ingestion_source_metadata.segment_recorded",
+          "hgs_brain.ingestion_source_metadata.timestamps_recorded",
+          "hgs_brain.ingestion_source_metadata.content_fingerprint",
+          "hgs_brain.ingestion_source_metadata.source_chunk_separation",
+          "hgs_brain.ingestion_source_metadata.frontmatter_preserved"
+        ],
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "source_file",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "lib/hgs_brain/ingestion_record.ex"
+      },
+      {
+        "covers": [
+          "hgs_brain.ingestion_source_metadata.origin_metadata",
+          "hgs_brain.ingestion_source_metadata.display_name",
+          "hgs_brain.ingestion_source_metadata.segment_recorded",
+          "hgs_brain.ingestion_source_metadata.timestamps_recorded",
+          "hgs_brain.ingestion_source_metadata.content_fingerprint",
+          "hgs_brain.ingestion_source_metadata.source_chunk_separation",
+          "hgs_brain.ingestion_source_metadata.frontmatter_preserved"
+        ],
+        "execute": true,
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "command",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "mix test test/hgs_brain/ingestion_test.exs"
+      },
+      {
+        "covers": [
           "hgs_brain.retrieval.accepts_query",
           "hgs_brain.retrieval.scoped",
           "hgs_brain.retrieval.rag_answer",
@@ -949,13 +1158,13 @@
   "specification_version": "1.0",
   "summary": {
     "decision_parse_errors": 0,
-    "decisions": 3,
+    "decisions": 4,
     "exceptions": 1,
     "findings": 0,
-    "requirements": 38,
-    "scenarios": 7,
-    "subjects": 11,
-    "verifications": 21
+    "requirements": 45,
+    "scenarios": 11,
+    "subjects": 12,
+    "verifications": 24
   },
   "verification": {
     "claims": [
@@ -1323,6 +1532,237 @@
         "verification_index": 2
       },
       {
+        "cover_id": "hgs_brain.ingestion_source_metadata.content_fingerprint",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.display_name",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.frontmatter_preserved",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.origin_metadata",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.segment_recorded",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.source_chunk_separation",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.timestamps_recorded",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.content_fingerprint",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "lib/hgs_brain/ingestion_record.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.display_name",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "lib/hgs_brain/ingestion_record.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.frontmatter_preserved",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "lib/hgs_brain/ingestion_record.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.origin_metadata",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "lib/hgs_brain/ingestion_record.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.segment_recorded",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "lib/hgs_brain/ingestion_record.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.source_chunk_separation",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "lib/hgs_brain/ingestion_record.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.timestamps_recorded",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "lib/hgs_brain/ingestion_record.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.content_fingerprint",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "mix test test/hgs_brain/ingestion_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.display_name",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "mix test test/hgs_brain/ingestion_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.frontmatter_preserved",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "mix test test/hgs_brain/ingestion_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.origin_metadata",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "mix test test/hgs_brain/ingestion_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.segment_recorded",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "mix test test/hgs_brain/ingestion_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.source_chunk_separation",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "mix test test/hgs_brain/ingestion_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.ingestion_source_metadata.timestamps_recorded",
+        "file": ".spec/specs/ingestion_source_metadata.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.ingestion_source_metadata",
+        "target": "mix test test/hgs_brain/ingestion_test.exs",
+        "verification_index": 2
+      },
+      {
         "cover_id": "hgs_brain.retrieval.accepts_query",
         "file": ".spec/specs/retrieval.spec.md",
         "kind": "source_file",
@@ -1668,13 +2108,13 @@
     "default_minimum_strength": "claimed",
     "strength_summary": {
       "claimed": 2,
-      "executed": 33,
-      "linked": 29
+      "executed": 40,
+      "linked": 43
     },
     "threshold_failures": 0
   },
   "workspace": {
-    "decision_count": 3,
-    "spec_count": 11
+    "decision_count": 4,
+    "spec_count": 12
   }
 }

@@ -7,15 +7,18 @@ defmodule HgsBrain.Application do
 
   @impl true
   def start(_type, _args) do
-    children = [
-      HgsBrainWeb.Telemetry,
-      HgsBrain.Repo,
-      {DNSCluster, query: Application.get_env(:hgs_brain, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: HgsBrain.PubSub},
-      Arcana.Embedder.Local,
-      # Start to serve requests, typically the last entry
-      HgsBrainWeb.Endpoint
-    ]
+    children =
+      [
+        HgsBrainWeb.Telemetry,
+        HgsBrain.Repo,
+        {DNSCluster, query: Application.get_env(:hgs_brain, :dns_cluster_query) || :ignore},
+        {Phoenix.PubSub, name: HgsBrain.PubSub}
+      ] ++
+        embedder_children() ++
+        [
+          # Start to serve requests, typically the last entry
+          HgsBrainWeb.Endpoint
+        ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -25,6 +28,14 @@ defmodule HgsBrain.Application do
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
+  defp embedder_children do
+    if Application.get_env(:hgs_brain, :start_embedder, true) do
+      [Arcana.Embedder.Local]
+    else
+      []
+    end
+  end
+
   @impl true
   def config_change(changed, _new, removed) do
     HgsBrainWeb.Endpoint.config_change(changed, removed)

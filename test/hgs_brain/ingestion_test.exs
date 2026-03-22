@@ -8,6 +8,13 @@ defmodule HgsBrain.IngestionTest do
   # covers: hgs_brain.ingestion_health.failures_visible
   # covers: hgs_brain.ingestion_health.source_change_detected
   # covers: hgs_brain.ingestion_health.reprocessing_supported
+  # covers: hgs_brain.ingestion_source_metadata.origin_metadata
+  # covers: hgs_brain.ingestion_source_metadata.display_name
+  # covers: hgs_brain.ingestion_source_metadata.segment_recorded
+  # covers: hgs_brain.ingestion_source_metadata.timestamps_recorded
+  # covers: hgs_brain.ingestion_source_metadata.content_fingerprint
+  # covers: hgs_brain.ingestion_source_metadata.source_chunk_separation
+  # covers: hgs_brain.ingestion_source_metadata.frontmatter_preserved
 
   use HgsBrain.DataCase, async: true
 
@@ -221,6 +228,131 @@ defmodule HgsBrain.IngestionTest do
       record = Ingestion.ingestion_health(path, :personal)
       assert record.status == :ok
       refute Ingestion.source_changed?(path, :personal)
+    end
+  end
+
+  describe "ingestion source metadata" do
+    setup do
+      path = Path.join(System.tmp_dir!(), "hgs_brain_meta_test_#{System.unique_integer()}.md")
+      on_exit(fn -> File.rm(path) end)
+      %{path: path}
+    end
+
+    test "stores the file path as origin metadata", %{path: path} do
+      File.write!(path, "# Hello\n\nContent.")
+
+      expect(HgsBrain.MockArcanaClient, :ingest_file, fn _path, _opts ->
+        {:ok, %{id: Ecto.UUID.generate()}}
+      end)
+
+      Ingestion.ingest_file(path, :personal)
+
+      record = Ingestion.ingestion_health(path, :personal)
+      assert record.file_path == path
+    end
+
+    test "stores the segment as metadata", %{path: path} do
+      File.write!(path, "# Hello\n\nContent.")
+
+      expect(HgsBrain.MockArcanaClient, :ingest_file, fn _path, _opts ->
+        {:ok, %{id: Ecto.UUID.generate()}}
+      end)
+
+      Ingestion.ingest_file(path, :work)
+
+      record = Ingestion.ingestion_health(path, :work)
+      assert record.segment == "work"
+    end
+
+    test "derives display title from frontmatter when present", %{path: path} do
+      File.write!(path, "---\ntitle: My Knowledge Note\n---\n\nContent.")
+
+      expect(HgsBrain.MockArcanaClient, :ingest_file, fn _path, _opts ->
+        {:ok, %{id: Ecto.UUID.generate()}}
+      end)
+
+      Ingestion.ingest_file(path, :personal)
+
+      record = Ingestion.ingestion_health(path, :personal)
+      assert record.title == "My Knowledge Note"
+    end
+
+    test "derives display title from filename when no frontmatter", %{path: _path} do
+      named_path = Path.join(System.tmp_dir!(), "my_work_notes.md")
+      File.write!(named_path, "# Hello\n\nContent.")
+      on_exit(fn -> File.rm(named_path) end)
+
+      expect(HgsBrain.MockArcanaClient, :ingest_file, fn _path, _opts ->
+        {:ok, %{id: Ecto.UUID.generate()}}
+      end)
+
+      Ingestion.ingest_file(named_path, :personal)
+
+      record = Ingestion.ingestion_health(named_path, :personal)
+      assert record.title == "My work notes"
+    end
+
+    test "stores document_id linking source to arcana chunks", %{path: path} do
+      doc_id = Ecto.UUID.generate()
+      File.write!(path, "# Hello\n\nContent.")
+
+      expect(HgsBrain.MockArcanaClient, :ingest_file, fn _path, _opts ->
+        {:ok, %{id: doc_id}}
+      end)
+
+      Ingestion.ingest_file(path, :personal)
+
+      record = Ingestion.ingestion_health(path, :personal)
+      assert record.document_id == doc_id
+    end
+
+    test "preserves frontmatter as structured metadata", %{path: path} do
+      File.write!(path, "---\ntitle: My Note\ntags: work elixir\n---\n\nContent.")
+
+      expect(HgsBrain.MockArcanaClient, :ingest_file, fn _path, _opts ->
+        {:ok, %{id: Ecto.UUID.generate()}}
+      end)
+
+      Ingestion.ingest_file(path, :personal)
+
+      record = Ingestion.ingestion_health(path, :personal)
+      assert record.frontmatter["title"] == "My Note"
+      assert record.frontmatter["tags"] == "work elixir"
+    end
+
+    test "stores nil frontmatter when none present", %{path: path} do
+      File.write!(path, "# Hello\n\nNo frontmatter.")
+
+      expect(HgsBrain.MockArcanaClient, :ingest_file, fn _path, _opts ->
+        {:ok, %{id: Ecto.UUID.generate()}}
+      end)
+
+      Ingestion.ingest_file(path, :personal)
+
+      record = Ingestion.ingestion_health(path, :personal)
+      assert record.frontmatter == nil
+    end
+
+    test "records timestamps distinguishing initial ingestion from updates", %{path: path} do
+      File.write!(path, "# Hello\n\nContent.")
+
+      expect(HgsBrain.MockArcanaClient, :ingest_file, 2, fn _path, _opts ->
+        {:ok, %{id: Ecto.UUID.generate()}}
+      end)
+
+      Ingestion.ingest_file(path, :personal)
+      first_record = Ingestion.ingestion_health(path, :personal)
+
+      File.write!(path, "# Hello\n\nUpdated content.")
+      Ingestion.ingest_file(path, :personal)
+      second_record = Ingestion.ingestion_health(path, :personal)
+
+      assert first_record.inserted_at == second_record.inserted_at
+
+      assert NaiveDateTime.compare(second_record.updated_at, first_record.updated_at) in [
+               :gt,
+               :eq
+             ]
     end
   end
 end
