@@ -6,7 +6,8 @@
           "hgs_brain.ingestion",
           "hgs_brain.ingestion_health",
           "hgs_brain.retrieval",
-          "hgs_brain.capture_inbox"
+          "hgs_brain.capture_inbox",
+          "hgs_brain.knowledge_source_ingestion"
         ],
         "date": "2026-03-21",
         "file": ".spec/decisions/hgs_brain.decision.arcana_for_rag.md",
@@ -325,6 +326,54 @@
         "stability": "evolving",
         "statement": "The system shall record source-level timestamps sufficient to distinguish initial ingestion from later updates.",
         "subject_id": "hgs_brain.ingestion_source_metadata"
+      },
+      {
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "id": "hgs_brain.knowledge_source_ingestion.extracts_ingestible_content",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "The system shall extract ingestible text or structured content from each supported source type before chunking and embedding.",
+        "subject_id": "hgs_brain.knowledge_source_ingestion"
+      },
+      {
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "id": "hgs_brain.knowledge_source_ingestion.multiple_source_types",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "The system shall support a unified ingestion contract for more than one knowledge-source type.",
+        "subject_id": "hgs_brain.knowledge_source_ingestion"
+      },
+      {
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "id": "hgs_brain.knowledge_source_ingestion.normalized_source_record",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "The system shall normalize supported source types into a common source-level record before downstream ingestion processing.",
+        "subject_id": "hgs_brain.knowledge_source_ingestion"
+      },
+      {
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "id": "hgs_brain.knowledge_source_ingestion.processing_failure_visible",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "When a supported source type cannot be processed successfully, the failure shall be inspectable through ingestion state rather than failing silently.",
+        "subject_id": "hgs_brain.knowledge_source_ingestion"
+      },
+      {
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "id": "hgs_brain.knowledge_source_ingestion.retrieval_eligibility",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "The system shall make processed sources eligible for retrieval workflows according to their ingestion state.",
+        "subject_id": "hgs_brain.knowledge_source_ingestion"
+      },
+      {
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "id": "hgs_brain.knowledge_source_ingestion.segment_preserved",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The system shall preserve segment assignment across source types throughout ingestion processing.",
+        "subject_id": "hgs_brain.knowledge_source_ingestion"
       },
       {
         "file": ".spec/specs/retrieval.spec.md",
@@ -672,6 +721,61 @@
       },
       {
         "covers": [
+          "hgs_brain.knowledge_source_ingestion.multiple_source_types",
+          "hgs_brain.knowledge_source_ingestion.normalized_source_record",
+          "hgs_brain.knowledge_source_ingestion.segment_preserved"
+        ],
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "given": [
+          "A markdown source and a captured source are submitted for ingestion"
+        ],
+        "id": "hgs_brain.knowledge_source_ingestion.markdown_and_capture_converge",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "then": [
+          "Both source types are represented using the same source-level ingestion contract",
+          "Segment assignment remains available for both"
+        ],
+        "when": [
+          "The ingestion pipeline evaluates them"
+        ]
+      },
+      {
+        "covers": [
+          "hgs_brain.knowledge_source_ingestion.extracts_ingestible_content",
+          "hgs_brain.knowledge_source_ingestion.retrieval_eligibility"
+        ],
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "given": [
+          "A supported source type is processed successfully"
+        ],
+        "id": "hgs_brain.knowledge_source_ingestion.processed_source_retrievable",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "then": [
+          "The processed source contributes ingestible content suitable for chunking and retrieval"
+        ],
+        "when": [
+          "Downstream retrieval workflows inspect available knowledge"
+        ]
+      },
+      {
+        "covers": [
+          "hgs_brain.knowledge_source_ingestion.processing_failure_visible"
+        ],
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "given": [
+          "A supported source fails during ingestion processing"
+        ],
+        "id": "hgs_brain.knowledge_source_ingestion.processing_failure_inspectable",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "then": [
+          "The failure is visible for inspection rather than being silent"
+        ],
+        "when": [
+          "Ingestion state is inspected"
+        ]
+      },
+      {
+        "covers": [
           "hgs_brain.source_transparency.answer_citations",
           "hgs_brain.source_transparency.segment_visibility",
           "hgs_brain.source_transparency.citation_fields"
@@ -755,11 +859,13 @@
         "file": ".spec/specs/capture_inbox.spec.md",
         "id": "hgs_brain.capture_inbox",
         "meta": {
-          "decisions": null,
+          "decisions": [
+            "hgs_brain.decision.arcana_for_rag"
+          ],
           "id": "hgs_brain.capture_inbox",
           "kind": "feature",
           "status": "active",
-          "summary": "The system allows users to create lightweight captures that enter an inbox state with source-level metadata preserved while remaining available to downstream retrieval workflows.",
+          "summary": "The system allows users to create lightweight captures that enter an inbox state with source-level metadata preserved while remaining available to downstream retrieval workflows. Captures normalize through the KnowledgeSource contract before ingestion.",
           "surface": [
             "lib/hgs_brain",
             "lib/hgs_brain_web"
@@ -798,7 +904,7 @@
           "id": "hgs_brain.ingestion",
           "kind": "feature",
           "status": "active",
-          "summary": "Accepts markdown files, chunks and embeds them via arcana, persists embeddings with segment tagging to pgvector, and records ingestion health including status, timestamps, and content hashes for change detection.",
+          "summary": "Accepts markdown files, normalizes them through KnowledgeSource, chunks and embeds them via arcana, persists embeddings with segment tagging to pgvector, and records ingestion health including status, timestamps, and content hashes for change detection.",
           "surface": [
             "lib/hgs_brain/ingestion.ex",
             "lib/hgs_brain/ingestion_record.ex"
@@ -819,7 +925,7 @@
           "id": "hgs_brain.ingestion_health",
           "kind": "feature",
           "status": "active",
-          "summary": "The system tracks ingestion status, recency, failures, and source changes so users can inspect ingestion health and reprocess sources when needed.",
+          "summary": "The system tracks ingestion status, recency, failures, and source changes so users can inspect ingestion health and reprocess sources when needed. Health records are written for all source types processed through the KnowledgeSource contract.",
           "surface": [
             "lib/hgs_brain/ingestion.ex",
             "lib/hgs_brain/ingestion_record.ex"
@@ -841,11 +947,33 @@
           "status": "active",
           "summary": "The system preserves canonical source-level metadata for ingested knowledge so origin, display, change detection, and source-to-chunk traceability remain available across ingestion and retrieval workflows.",
           "surface": [
-            "lib/hgs_brain/ingestion.ex"
+            "lib/hgs_brain/ingestion.ex",
+            "lib/hgs_brain/knowledge_source.ex"
           ],
           "verification_minimum_strength": null
         },
         "title": "Ingestion Source Metadata"
+      },
+      {
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "id": "hgs_brain.knowledge_source_ingestion",
+        "meta": {
+          "decisions": [
+            "hgs_brain.decision.arcana_for_rag",
+            "hgs_brain.decision.pgvector_storage"
+          ],
+          "id": "hgs_brain.knowledge_source_ingestion",
+          "kind": "feature",
+          "status": "active",
+          "summary": "The system accepts multiple knowledge-source types and normalizes them into a common ingestion pipeline so source metadata, downstream chunking, and retrieval eligibility remain consistent across source origins.",
+          "surface": [
+            "lib/hgs_brain/ingestion.ex",
+            "lib/hgs_brain",
+            "lib/hgs_brain_web"
+          ],
+          "verification_minimum_strength": null
+        },
+        "title": "Knowledge Source Ingestion"
       },
       {
         "file": ".spec/specs/package.spec.md",
@@ -860,7 +988,7 @@
           "id": "hgs_brain",
           "kind": "package",
           "status": "active",
-          "summary": "Personal Phoenix LiveView second brain that ingests markdown documents with health tracking, captures lightweight inbox items from freeform text, answers natural language questions scoped to a work or personal segment, and surfaces grounded citations for every response.",
+          "summary": "Personal Phoenix LiveView second brain that normalizes multiple source types (markdown files, captures) through a unified KnowledgeSource contract, tracks ingestion health, answers natural language questions scoped to a work or personal segment, and surfaces grounded citations for every response.",
           "surface": [
             "mix.exs",
             "lib/hgs_brain",
@@ -1194,6 +1322,63 @@
       },
       {
         "covers": [
+          "hgs_brain.knowledge_source_ingestion.multiple_source_types",
+          "hgs_brain.knowledge_source_ingestion.normalized_source_record",
+          "hgs_brain.knowledge_source_ingestion.segment_preserved",
+          "hgs_brain.knowledge_source_ingestion.extracts_ingestible_content",
+          "hgs_brain.knowledge_source_ingestion.retrieval_eligibility",
+          "hgs_brain.knowledge_source_ingestion.processing_failure_visible"
+        ],
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/knowledge_source.ex"
+      },
+      {
+        "covers": [
+          "hgs_brain.knowledge_source_ingestion.multiple_source_types",
+          "hgs_brain.knowledge_source_ingestion.normalized_source_record",
+          "hgs_brain.knowledge_source_ingestion.segment_preserved",
+          "hgs_brain.knowledge_source_ingestion.extracts_ingestible_content",
+          "hgs_brain.knowledge_source_ingestion.retrieval_eligibility",
+          "hgs_brain.knowledge_source_ingestion.processing_failure_visible"
+        ],
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/ingestion.ex"
+      },
+      {
+        "covers": [
+          "hgs_brain.knowledge_source_ingestion.multiple_source_types",
+          "hgs_brain.knowledge_source_ingestion.normalized_source_record",
+          "hgs_brain.knowledge_source_ingestion.segment_preserved",
+          "hgs_brain.knowledge_source_ingestion.extracts_ingestible_content",
+          "hgs_brain.knowledge_source_ingestion.retrieval_eligibility",
+          "hgs_brain.knowledge_source_ingestion.processing_failure_visible"
+        ],
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/captures.ex"
+      },
+      {
+        "covers": [
+          "hgs_brain.knowledge_source_ingestion.multiple_source_types",
+          "hgs_brain.knowledge_source_ingestion.normalized_source_record",
+          "hgs_brain.knowledge_source_ingestion.segment_preserved",
+          "hgs_brain.knowledge_source_ingestion.extracts_ingestible_content",
+          "hgs_brain.knowledge_source_ingestion.retrieval_eligibility",
+          "hgs_brain.knowledge_source_ingestion.processing_failure_visible"
+        ],
+        "execute": true,
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "command",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "mix test test/hgs_brain/knowledge_source_ingestion_test.exs"
+      },
+      {
+        "covers": [
           "hgs_brain.retrieval.accepts_query",
           "hgs_brain.retrieval.scoped",
           "hgs_brain.retrieval.rag_answer",
@@ -1350,10 +1535,10 @@
     "decisions": 4,
     "exceptions": 1,
     "findings": 0,
-    "requirements": 53,
-    "scenarios": 13,
-    "subjects": 13,
-    "verifications": 28
+    "requirements": 59,
+    "scenarios": 16,
+    "subjects": 14,
+    "verifications": 32
   },
   "verification": {
     "claims": [
@@ -2260,6 +2445,270 @@
         "verification_index": 2
       },
       {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.extracts_ingestible_content",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/knowledge_source.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.multiple_source_types",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/knowledge_source.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.normalized_source_record",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/knowledge_source.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.processing_failure_visible",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/knowledge_source.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.retrieval_eligibility",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/knowledge_source.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.segment_preserved",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/knowledge_source.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.extracts_ingestible_content",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.multiple_source_types",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.normalized_source_record",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.processing_failure_visible",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.retrieval_eligibility",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.segment_preserved",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/ingestion.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.extracts_ingestible_content",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/captures.ex",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.multiple_source_types",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/captures.ex",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.normalized_source_record",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/captures.ex",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.processing_failure_visible",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/captures.ex",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.retrieval_eligibility",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/captures.ex",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.segment_preserved",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "lib/hgs_brain/captures.ex",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.extracts_ingestible_content",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "mix test test/hgs_brain/knowledge_source_ingestion_test.exs",
+        "verification_index": 3
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.multiple_source_types",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "mix test test/hgs_brain/knowledge_source_ingestion_test.exs",
+        "verification_index": 3
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.normalized_source_record",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "mix test test/hgs_brain/knowledge_source_ingestion_test.exs",
+        "verification_index": 3
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.processing_failure_visible",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "mix test test/hgs_brain/knowledge_source_ingestion_test.exs",
+        "verification_index": 3
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.retrieval_eligibility",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "mix test test/hgs_brain/knowledge_source_ingestion_test.exs",
+        "verification_index": 3
+      },
+      {
+        "cover_id": "hgs_brain.knowledge_source_ingestion.segment_preserved",
+        "file": ".spec/specs/knowledge_source_ingestion.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.knowledge_source_ingestion",
+        "target": "mix test test/hgs_brain/knowledge_source_ingestion_test.exs",
+        "verification_index": 3
+      },
+      {
         "cover_id": "hgs_brain.retrieval.accepts_query",
         "file": ".spec/specs/retrieval.spec.md",
         "kind": "source_file",
@@ -2605,13 +3054,13 @@
     "default_minimum_strength": "claimed",
     "strength_summary": {
       "claimed": 2,
-      "executed": 48,
-      "linked": 63
+      "executed": 54,
+      "linked": 81
     },
     "threshold_failures": 0
   },
   "workspace": {
     "decision_count": 4,
-    "spec_count": 13
+    "spec_count": 14
   }
 }

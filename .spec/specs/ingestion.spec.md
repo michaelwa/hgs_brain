@@ -6,7 +6,7 @@ Markdown document ingestion pipeline.
 id: hgs_brain.ingestion
 kind: feature
 status: active
-summary: Accepts markdown files, chunks and embeds them via arcana, persists embeddings with segment tagging to pgvector, and records ingestion health including status, timestamps, and content hashes for change detection.
+summary: Accepts markdown files, normalizes them through KnowledgeSource, chunks and embeds them via arcana, persists embeddings with segment tagging to pgvector, and records ingestion health including status, timestamps, and content hashes for change detection.
 surface:
   - lib/hgs_brain/ingestion.ex
   - lib/hgs_brain/ingestion_record.ex

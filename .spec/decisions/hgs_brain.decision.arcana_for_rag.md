@@ -7,6 +7,7 @@ affects:
   - hgs_brain.ingestion_health
   - hgs_brain.retrieval
   - hgs_brain.capture_inbox
+  - hgs_brain.knowledge_source_ingestion
 ---
 
 # Use Arcana for RAG

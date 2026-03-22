@@ -11,12 +11,19 @@ defmodule HgsBrain.Captures do
   <!-- covers: hgs_brain.capture_inbox.timestamps_recorded -->
   <!-- covers: hgs_brain.capture_inbox.display_ready -->
   <!-- covers: hgs_brain.capture_inbox.retrievable_while_inbox -->
+  <!-- covers: hgs_brain.knowledge_source_ingestion.multiple_source_types -->
+  <!-- covers: hgs_brain.knowledge_source_ingestion.normalized_source_record -->
+  <!-- covers: hgs_brain.knowledge_source_ingestion.segment_preserved -->
+  <!-- covers: hgs_brain.knowledge_source_ingestion.extracts_ingestible_content -->
+  <!-- covers: hgs_brain.knowledge_source_ingestion.retrieval_eligibility -->
+  <!-- covers: hgs_brain.knowledge_source_ingestion.processing_failure_visible -->
   """
 
   import Ecto.Query
 
   alias HgsBrain.Repo
   alias HgsBrain.Capture
+  alias HgsBrain.KnowledgeSource
 
   @arcana_client Application.compile_env(:hgs_brain, :arcana_client, Arcana)
 
@@ -30,17 +37,18 @@ defmodule HgsBrain.Captures do
   """
   @spec create_capture(String.t(), segment()) :: {:ok, Capture.t()} | {:error, Ecto.Changeset.t()}
   def create_capture(text, segment) when segment in [:work, :personal] and is_binary(text) do
-    collection = collection_name(segment)
+    source = KnowledgeSource.from_capture(text, segment)
+    collection = source.segment
 
     attrs = %{
-      content: text,
-      segment: Atom.to_string(segment),
+      content: source.content,
+      segment: source.segment,
       status: :inbox,
-      origin_type: "quick_text"
+      origin_type: source.origin_type
     }
 
     with {:ok, capture} <- insert_capture(attrs),
-         {:ok, doc} <- @arcana_client.ingest(text, repo: Repo, collection: collection) do
+         {:ok, doc} <- @arcana_client.ingest(source.content, repo: Repo, collection: collection) do
       capture
       |> Capture.changeset(%{document_id: Map.get(doc, :id)})
       |> Repo.update()
@@ -76,7 +84,4 @@ defmodule HgsBrain.Captures do
     |> Capture.changeset(attrs)
     |> Repo.insert()
   end
-
-  defp collection_name(:work), do: "work"
-  defp collection_name(:personal), do: "personal"
 end

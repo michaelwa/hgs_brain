@@ -22,12 +22,19 @@ defmodule HgsBrain.Ingestion do
   <!-- covers: hgs_brain.ingestion_source_metadata.content_fingerprint -->
   <!-- covers: hgs_brain.ingestion_source_metadata.source_chunk_separation -->
   <!-- covers: hgs_brain.ingestion_source_metadata.frontmatter_preserved -->
+  <!-- covers: hgs_brain.knowledge_source_ingestion.multiple_source_types -->
+  <!-- covers: hgs_brain.knowledge_source_ingestion.normalized_source_record -->
+  <!-- covers: hgs_brain.knowledge_source_ingestion.segment_preserved -->
+  <!-- covers: hgs_brain.knowledge_source_ingestion.extracts_ingestible_content -->
+  <!-- covers: hgs_brain.knowledge_source_ingestion.retrieval_eligibility -->
+  <!-- covers: hgs_brain.knowledge_source_ingestion.processing_failure_visible -->
   """
 
   import Ecto.Query
 
   alias HgsBrain.Repo
   alias HgsBrain.IngestionRecord
+  alias HgsBrain.KnowledgeSource
   alias Arcana.Document
 
   @arcana_client Application.compile_env(:hgs_brain, :arcana_client, Arcana)
@@ -45,14 +52,14 @@ defmodule HgsBrain.Ingestion do
   @spec ingest_file(Path.t(), segment()) :: {:ok, Arcana.Document.t()} | {:error, term()}
   def ingest_file(path, segment) when segment in [:work, :personal] do
     collection = collection_name(segment)
-    {title, frontmatter} = extract_source_metadata(path)
+    source = KnowledgeSource.from_file(path, segment)
 
     result =
       with :ok <- delete_existing(path, collection) do
         @arcana_client.ingest_file(path, repo: Repo, collection: collection)
       end
 
-    record_health(path, segment, result, title: title, frontmatter: frontmatter)
+    record_health(path, segment, result, title: source.title, frontmatter: source.frontmatter)
     result
   end
 
@@ -160,45 +167,6 @@ defmodule HgsBrain.Ingestion do
         |> IngestionRecord.changeset(attrs)
         |> Repo.update!()
     end
-  end
-
-  defp extract_source_metadata(path) do
-    case File.read(path) do
-      {:ok, content} ->
-        frontmatter = parse_frontmatter(content)
-        title = (frontmatter && Map.get(frontmatter, "title")) || derive_title(path)
-        {title, frontmatter}
-
-      {:error, _} ->
-        {derive_title(path), nil}
-    end
-  end
-
-  defp parse_frontmatter(content) do
-    case Regex.run(~r/\A---\n(.*?)\n---(\n|\z)/s, content, capture: :all_but_first) do
-      [yaml | _] -> parse_yaml_kv(yaml)
-      nil -> nil
-    end
-  end
-
-  defp parse_yaml_kv(yaml) do
-    result =
-      yaml
-      |> String.split("\n")
-      |> Enum.reduce(%{}, fn line, acc ->
-        case Regex.run(~r/^([^:]+):\s*(.+)$/, String.trim(line)) do
-          [_, key, value] -> Map.put(acc, String.trim(key), String.trim(value))
-          _ -> acc
-        end
-      end)
-
-    if map_size(result) == 0, do: nil, else: result
-  end
-
-  defp derive_title(path) do
-    base = Path.basename(path, Path.extname(path))
-    humanized = String.replace(base, ~r/[-_]+/, " ")
-    String.upcase(String.first(humanized)) <> String.slice(humanized, 1..-1//1)
   end
 
   defp current_hash(path) do

@@ -9,6 +9,7 @@ status: active
 summary: The system preserves canonical source-level metadata for ingested knowledge so origin, display, change detection, and source-to-chunk traceability remain available across ingestion and retrieval workflows.
 surface:
   - lib/hgs_brain/ingestion.ex
+  - lib/hgs_brain/knowledge_source.ex
 decisions:
   - hgs_brain.decision.arcana_for_rag
   - hgs_brain.decision.pgvector_storage

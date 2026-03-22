@@ -6,7 +6,7 @@ Operational visibility and maintenance workflows for ingested knowledge sources.
 id: hgs_brain.ingestion_health
 kind: feature
 status: active
-summary: The system tracks ingestion status, recency, failures, and source changes so users can inspect ingestion health and reprocess sources when needed.
+summary: The system tracks ingestion status, recency, failures, and source changes so users can inspect ingestion health and reprocess sources when needed. Health records are written for all source types processed through the KnowledgeSource contract.
 surface:
   - lib/hgs_brain/ingestion.ex
   - lib/hgs_brain/ingestion_record.ex
