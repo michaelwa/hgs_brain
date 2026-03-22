@@ -7,6 +7,7 @@ defmodule HgsBrain.ArcanaClient do
   application config.
   """
 
+  @callback ingest(String.t(), keyword()) :: {:ok, map()} | {:error, term()}
   @callback ingest_file(Path.t(), keyword()) :: {:ok, map()} | {:error, term()}
   @callback ask(String.t(), keyword()) :: {:ok, String.t(), list()} | {:error, term()}
   @callback search(String.t(), keyword()) :: list()
