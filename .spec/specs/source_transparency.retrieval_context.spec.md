@@ -6,7 +6,7 @@ Extend the retrieval layer to return source metadata alongside answers.
 id: hgs_brain.source_transparency.retrieval_context
 kind: feature
 status: active
-summary: The retrieval layer surfaces source metadata, excerpt text, and score for each retrieved passage, sorted by descending relevance score, so the UI can present grounded citations in rank order.
+summary: The retrieval layer surfaces source metadata, excerpt text, score, and review state for each retrieved passage, sorted by descending relevance score, so the UI can present grounded citations in rank order and apply review-scope filtering.
 surface:
   - lib/hgs_brain/retrieval.ex
 ```

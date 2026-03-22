@@ -7,7 +7,8 @@
           "hgs_brain.ingestion_health",
           "hgs_brain.retrieval",
           "hgs_brain.capture_inbox",
-          "hgs_brain.knowledge_source_ingestion"
+          "hgs_brain.knowledge_source_ingestion",
+          "hgs_brain.retrieval_review_scope"
         ],
         "date": "2026-03-21",
         "file": ".spec/decisions/hgs_brain.decision.arcana_for_rag.md",
@@ -68,6 +69,15 @@
         "id": "hgs_brain.package_bootstrap_waiver",
         "reason": "Package-level requirements are covered by the ingestion and retrieval feature specs. Verification will be added as those features are implemented.",
         "subject_id": "hgs_brain"
+      },
+      {
+        "covers": [
+          "hgs_brain.retrieval_review_scope.inbox_default_include_inbox"
+        ],
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "id": "hgs_brain.retrieval_review_scope.inbox_default_waiver",
+        "reason": "The inbox-native refinement workflow retrieval flow is not yet implemented. inbox_default_include_inbox will be verified when inbox-context retrieval exists.",
+        "subject_id": "hgs_brain.retrieval_review_scope"
       }
     ],
     "requirements": [
@@ -406,6 +416,78 @@
         "stability": "stable",
         "statement": "Retrieval shall return only content belonging to the specified segment; work and personal knowledge shall not mix.",
         "subject_id": "hgs_brain.retrieval"
+      },
+      {
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "id": "hgs_brain.retrieval_review_scope.ask_respected",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "Ask-mode retrieval shall respect the selected review scope.",
+        "subject_id": "hgs_brain.retrieval_review_scope"
+      },
+      {
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "id": "hgs_brain.retrieval_review_scope.chat_default_reviewed_only",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "In the general chat workflow, the default review scope shall be reviewed-only unless the user selects a broader scope.",
+        "subject_id": "hgs_brain.retrieval_review_scope"
+      },
+      {
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "id": "hgs_brain.retrieval_review_scope.inbox_default_include_inbox",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "In inbox-native refinement workflows, the default review scope shall include inbox content unless the user selects a narrower scope.",
+        "subject_id": "hgs_brain.retrieval_review_scope"
+      },
+      {
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "id": "hgs_brain.retrieval_review_scope.include_inbox",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The system shall support retrieval workflows that include sources in inbox state.",
+        "subject_id": "hgs_brain.retrieval_review_scope"
+      },
+      {
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "id": "hgs_brain.retrieval_review_scope.reviewed_only",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The system shall support retrieval workflows that exclude inbox sources and use reviewed-only knowledge.",
+        "subject_id": "hgs_brain.retrieval_review_scope"
+      },
+      {
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "id": "hgs_brain.retrieval_review_scope.scope_visible",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "The active review scope shall be visible to the user before query submission.",
+        "subject_id": "hgs_brain.retrieval_review_scope"
+      },
+      {
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "id": "hgs_brain.retrieval_review_scope.search_respected",
+        "priority": "must",
+        "stability": "stable",
+        "statement": "Search-mode retrieval shall respect the selected review scope.",
+        "subject_id": "hgs_brain.retrieval_review_scope"
+      },
+      {
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "id": "hgs_brain.retrieval_review_scope.source_state_available",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "Retrieval workflows shall have access to source review state metadata sufficient to apply review-scope filtering.",
+        "subject_id": "hgs_brain.retrieval_review_scope"
+      },
+      {
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "id": "hgs_brain.retrieval_review_scope.workflow_default",
+        "priority": "should",
+        "stability": "evolving",
+        "statement": "The system shall allow the default review scope to vary by workflow context.",
+        "subject_id": "hgs_brain.retrieval_review_scope"
       },
       {
         "file": ".spec/specs/source_transparency.citation_ui.spec.md",
@@ -776,6 +858,101 @@
       },
       {
         "covers": [
+          "hgs_brain.retrieval_review_scope.include_inbox",
+          "hgs_brain.retrieval_review_scope.ask_respected",
+          "hgs_brain.retrieval_review_scope.scope_visible"
+        ],
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "given": [
+          "The user selects a review scope that includes inbox content"
+        ],
+        "id": "hgs_brain.retrieval_review_scope.ask_with_inbox",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "then": [
+          "Retrieval may include sources that remain in inbox state",
+          "The selected review scope is visible in the UI"
+        ],
+        "when": [
+          "The user submits a question in ask mode"
+        ]
+      },
+      {
+        "covers": [
+          "hgs_brain.retrieval_review_scope.workflow_default",
+          "hgs_brain.retrieval_review_scope.chat_default_reviewed_only"
+        ],
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "given": [
+          "The user is in the general chat workflow",
+          "No explicit review scope has been selected"
+        ],
+        "id": "hgs_brain.retrieval_review_scope.chat_defaults_reviewed",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "then": [
+          "The default review scope is reviewed-only"
+        ],
+        "when": [
+          "The user submits a question"
+        ]
+      },
+      {
+        "covers": [
+          "hgs_brain.retrieval_review_scope.workflow_default",
+          "hgs_brain.retrieval_review_scope.inbox_default_include_inbox"
+        ],
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "given": [
+          "The user is in an inbox-native refinement workflow",
+          "No explicit review scope has been selected"
+        ],
+        "id": "hgs_brain.retrieval_review_scope.inbox_refinement_defaults_broad",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "then": [
+          "The default review scope includes inbox content"
+        ],
+        "when": [
+          "Related knowledge is retrieved for refinement"
+        ]
+      },
+      {
+        "covers": [
+          "hgs_brain.retrieval_review_scope.reviewed_only",
+          "hgs_brain.retrieval_review_scope.search_respected",
+          "hgs_brain.retrieval_review_scope.scope_visible"
+        ],
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "given": [
+          "The user selects reviewed-only scope"
+        ],
+        "id": "hgs_brain.retrieval_review_scope.search_reviewed_only",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "then": [
+          "Retrieval excludes inbox-state sources",
+          "The selected review scope is visible in the UI"
+        ],
+        "when": [
+          "The user submits a query in search mode"
+        ]
+      },
+      {
+        "covers": [
+          "hgs_brain.retrieval_review_scope.source_state_available"
+        ],
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "given": [
+          "Sources exist in both inbox and reviewed states"
+        ],
+        "id": "hgs_brain.retrieval_review_scope.state_used_for_filtering",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "then": [
+          "Source review state metadata is available to determine which sources are eligible"
+        ],
+        "when": [
+          "Retrieval evaluates the active review scope"
+        ]
+      },
+      {
+        "covers": [
           "hgs_brain.source_transparency.answer_citations",
           "hgs_brain.source_transparency.segment_visibility",
           "hgs_brain.source_transparency.citation_fields"
@@ -865,7 +1042,7 @@
           "id": "hgs_brain.capture_inbox",
           "kind": "feature",
           "status": "active",
-          "summary": "The system allows users to create lightweight captures that enter an inbox state with source-level metadata preserved while remaining available to downstream retrieval workflows. Captures normalize through the KnowledgeSource contract before ingestion.",
+          "summary": "The system allows users to create lightweight captures that enter an inbox state with source-level metadata preserved while remaining available to downstream retrieval workflows. Captures normalize through the KnowledgeSource contract before ingestion and expose review state metadata so retrieval workflows can apply review-scope filtering.",
           "surface": [
             "lib/hgs_brain",
             "lib/hgs_brain_web"
@@ -884,7 +1061,7 @@
           "id": "hgs_brain.chat_ui",
           "kind": "feature",
           "status": "active",
-          "summary": "LiveView page for querying the knowledge base, with segment selection, ask/search mode toggle (defaulting to ask), and result display. Results are fetched asynchronously via start_async and rendered on completion.",
+          "summary": "LiveView page for querying the knowledge base, with segment selection, ask/search mode toggle (defaulting to ask), review scope selector (defaulting to reviewed-only), and result display. Results are fetched asynchronously via start_async and rendered on completion.",
           "surface": [
             "lib/hgs_brain_web/live/chat_live.ex"
           ],
@@ -965,7 +1142,7 @@
           "id": "hgs_brain.knowledge_source_ingestion",
           "kind": "feature",
           "status": "active",
-          "summary": "The system accepts multiple knowledge-source types and normalizes them into a common ingestion pipeline so source metadata, downstream chunking, and retrieval eligibility remain consistent across source origins.",
+          "summary": "The system accepts multiple knowledge-source types and normalizes them into a common ingestion pipeline so source metadata, downstream chunking, retrieval eligibility, and review-state tracking remain consistent across source origins.",
           "surface": [
             "lib/hgs_brain/ingestion.ex",
             "lib/hgs_brain",
@@ -988,7 +1165,7 @@
           "id": "hgs_brain",
           "kind": "package",
           "status": "active",
-          "summary": "Personal Phoenix LiveView second brain that normalizes multiple source types (markdown files, captures) through a unified KnowledgeSource contract, tracks ingestion health, answers natural language questions scoped to a work or personal segment, and surfaces grounded citations for every response.",
+          "summary": "Personal Phoenix LiveView second brain that normalizes multiple source types (markdown files, captures) through a unified KnowledgeSource contract, tracks ingestion health, answers natural language questions scoped to a work or personal segment, surfaces grounded citations for every response, and supports review-scope filtering so users can restrict retrieval to reviewed knowledge or include inbox captures.",
           "surface": [
             "mix.exs",
             "lib/hgs_brain",
@@ -1010,13 +1187,31 @@
           "id": "hgs_brain.retrieval",
           "kind": "feature",
           "status": "active",
-          "summary": "Accepts natural language questions scoped to a segment and returns AI-generated answers alongside enriched source maps containing passage text, file path, segment, score, and chunk position, sorted by descending relevance score.",
+          "summary": "Accepts natural language questions scoped to a segment and returns AI-generated answers alongside enriched source maps containing passage text, file path, segment, score, chunk position, and review state, sorted by descending relevance score. Supports a review_scope option to restrict results to reviewed-only knowledge or include inbox captures.",
           "surface": [
             "lib/hgs_brain/retrieval.ex"
           ],
           "verification_minimum_strength": null
         },
         "title": "Retrieval"
+      },
+      {
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "id": "hgs_brain.retrieval_review_scope",
+        "meta": {
+          "decisions": null,
+          "id": "hgs_brain.retrieval_review_scope",
+          "kind": "feature",
+          "status": "active",
+          "summary": "The system allows users to control whether retrieval workflows include inbox captures or restrict results to reviewed knowledge, applies that scope consistently across ask and search flows, and supports workflow-specific default review scopes.",
+          "surface": [
+            "lib/hgs_brain/retrieval.ex",
+            "lib/hgs_brain_web/live/chat_live.ex",
+            "lib/hgs_brain_web"
+          ],
+          "verification_minimum_strength": null
+        },
+        "title": "Retrieval Review Scope"
       },
       {
         "file": ".spec/specs/source_transparency.citation_ui.spec.md",
@@ -1026,7 +1221,7 @@
           "id": "hgs_brain.source_transparency.citation_ui",
           "kind": "feature",
           "status": "active",
-          "summary": "The chat UI displays a Sources list beneath each AI-generated answer, showing source identity, segment, excerpt, and ordinal rank for each supporting passage.",
+          "summary": "The chat UI displays a Sources list beneath each AI-generated answer, showing source identity, segment, excerpt, and ordinal rank for each supporting passage. Displayed sources reflect the active review scope selected by the user.",
           "surface": [
             "lib/hgs_brain_web/live/chat_live.ex"
           ],
@@ -1042,7 +1237,7 @@
           "id": "hgs_brain.source_transparency.relevance_signal",
           "kind": "feature",
           "status": "active",
-          "summary": "Each supporting citation carries a lightweight relevance signal expressed as retrieval rank so users can judge how strongly a passage supported the answer without interpreting raw similarity scores.",
+          "summary": "Each supporting citation carries a lightweight relevance signal expressed as retrieval rank so users can judge how strongly a passage supported the answer without interpreting raw similarity scores. Rank reflects the post-review-scope filtered result set.",
           "surface": [
             "lib/hgs_brain/retrieval.ex",
             "lib/hgs_brain_web/live/chat_live.ex"
@@ -1059,7 +1254,7 @@
           "id": "hgs_brain.source_transparency.retrieval_context",
           "kind": "feature",
           "status": "active",
-          "summary": "The retrieval layer surfaces source metadata, excerpt text, and score for each retrieved passage, sorted by descending relevance score, so the UI can present grounded citations in rank order.",
+          "summary": "The retrieval layer surfaces source metadata, excerpt text, score, and review state for each retrieved passage, sorted by descending relevance score, so the UI can present grounded citations in rank order and apply review-scope filtering.",
           "surface": [
             "lib/hgs_brain/retrieval.ex"
           ],
@@ -1075,7 +1270,7 @@
           "id": "hgs_brain.source_transparency.search_consistency",
           "kind": "feature",
           "status": "active",
-          "summary": "Search mode results display source metadata, excerpt text, segment visibility, and rank using the same citation card structure as ask-mode citations, giving users a uniform inspection experience across both modes.",
+          "summary": "Search mode results display source metadata, excerpt text, segment visibility, and rank using the same citation card structure as ask-mode citations, giving users a uniform inspection experience across both modes. Both modes apply the same review scope filtering.",
           "surface": [
             "lib/hgs_brain_web/live/chat_live.ex"
           ],
@@ -1091,7 +1286,7 @@
           "id": "hgs_brain.source_transparency.weak_grounding",
           "kind": "feature",
           "status": "active",
-          "summary": "When ask mode produces an answer without any retrieved supporting passages, the UI presents a clear weak-grounding state instead of implying the answer is well supported.",
+          "summary": "When ask mode produces an answer without any retrieved supporting passages (including when all passages are filtered by review scope), the UI presents a clear weak-grounding state instead of implying the answer is well supported.",
           "surface": [
             "lib/hgs_brain_web/live/chat_live.ex"
           ],
@@ -1404,6 +1599,49 @@
       },
       {
         "covers": [
+          "hgs_brain.retrieval_review_scope.include_inbox",
+          "hgs_brain.retrieval_review_scope.reviewed_only",
+          "hgs_brain.retrieval_review_scope.ask_respected",
+          "hgs_brain.retrieval_review_scope.search_respected",
+          "hgs_brain.retrieval_review_scope.source_state_available"
+        ],
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "source_file",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "lib/hgs_brain/retrieval.ex"
+      },
+      {
+        "covers": [
+          "hgs_brain.retrieval_review_scope.scope_visible",
+          "hgs_brain.retrieval_review_scope.ask_respected",
+          "hgs_brain.retrieval_review_scope.search_respected",
+          "hgs_brain.retrieval_review_scope.chat_default_reviewed_only",
+          "hgs_brain.retrieval_review_scope.workflow_default"
+        ],
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "source_file",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "lib/hgs_brain_web/live/chat_live.ex"
+      },
+      {
+        "covers": [
+          "hgs_brain.retrieval_review_scope.include_inbox",
+          "hgs_brain.retrieval_review_scope.reviewed_only",
+          "hgs_brain.retrieval_review_scope.ask_respected",
+          "hgs_brain.retrieval_review_scope.search_respected",
+          "hgs_brain.retrieval_review_scope.scope_visible",
+          "hgs_brain.retrieval_review_scope.source_state_available",
+          "hgs_brain.retrieval_review_scope.chat_default_reviewed_only",
+          "hgs_brain.retrieval_review_scope.workflow_default"
+        ],
+        "execute": true,
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "command",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "mix test test/hgs_brain/retrieval_review_scope_test.exs test/hgs_brain_web/live/chat_live_test.exs"
+      },
+      {
+        "covers": [
           "hgs_brain.source_transparency.answer_citations",
           "hgs_brain.source_transparency.segment_visibility",
           "hgs_brain.source_transparency.citation_fields"
@@ -1533,12 +1771,12 @@
   "summary": {
     "decision_parse_errors": 0,
     "decisions": 4,
-    "exceptions": 1,
+    "exceptions": 2,
     "findings": 0,
-    "requirements": 59,
-    "scenarios": 16,
-    "subjects": 14,
-    "verifications": 32
+    "requirements": 68,
+    "scenarios": 21,
+    "subjects": 15,
+    "verifications": 35
   },
   "verification": {
     "claims": [
@@ -2797,6 +3035,204 @@
         "verification_index": 1
       },
       {
+        "cover_id": "hgs_brain.retrieval_review_scope.ask_respected",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "lib/hgs_brain/retrieval.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.include_inbox",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "lib/hgs_brain/retrieval.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.reviewed_only",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "lib/hgs_brain/retrieval.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.search_respected",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "lib/hgs_brain/retrieval.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.source_state_available",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "lib/hgs_brain/retrieval.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.ask_respected",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "lib/hgs_brain_web/live/chat_live.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.chat_default_reviewed_only",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "lib/hgs_brain_web/live/chat_live.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.scope_visible",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "lib/hgs_brain_web/live/chat_live.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.search_respected",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "lib/hgs_brain_web/live/chat_live.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.workflow_default",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "lib/hgs_brain_web/live/chat_live.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.ask_respected",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "mix test test/hgs_brain/retrieval_review_scope_test.exs test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.chat_default_reviewed_only",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "mix test test/hgs_brain/retrieval_review_scope_test.exs test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.include_inbox",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "mix test test/hgs_brain/retrieval_review_scope_test.exs test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.reviewed_only",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "mix test test/hgs_brain/retrieval_review_scope_test.exs test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.scope_visible",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "mix test test/hgs_brain/retrieval_review_scope_test.exs test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.search_respected",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "mix test test/hgs_brain/retrieval_review_scope_test.exs test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.source_state_available",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "mix test test/hgs_brain/retrieval_review_scope_test.exs test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.retrieval_review_scope.workflow_default",
+        "file": ".spec/specs/retrieval_review_scope.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.retrieval_review_scope",
+        "target": "mix test test/hgs_brain/retrieval_review_scope_test.exs test/hgs_brain_web/live/chat_live_test.exs",
+        "verification_index": 2
+      },
+      {
         "cover_id": "hgs_brain.source_transparency.answer_citations",
         "file": ".spec/specs/source_transparency.citation_ui.spec.md",
         "kind": "command",
@@ -3054,13 +3490,13 @@
     "default_minimum_strength": "claimed",
     "strength_summary": {
       "claimed": 2,
-      "executed": 54,
-      "linked": 81
+      "executed": 62,
+      "linked": 91
     },
     "threshold_failures": 0
   },
   "workspace": {
     "decision_count": 4,
-    "spec_count": 14
+    "spec_count": 15
   }
 }

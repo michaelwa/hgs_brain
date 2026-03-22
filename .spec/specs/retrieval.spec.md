@@ -6,7 +6,7 @@ RAG-powered Q&A retrieval with enriched source context.
 id: hgs_brain.retrieval
 kind: feature
 status: active
-summary: Accepts natural language questions scoped to a segment and returns AI-generated answers alongside enriched source maps containing passage text, file path, segment, score, and chunk position, sorted by descending relevance score.
+summary: Accepts natural language questions scoped to a segment and returns AI-generated answers alongside enriched source maps containing passage text, file path, segment, score, chunk position, and review state, sorted by descending relevance score. Supports a review_scope option to restrict results to reviewed-only knowledge or include inbox captures.
 surface:
   - lib/hgs_brain/retrieval.ex
 decisions:

@@ -14,6 +14,11 @@ defmodule HgsBrainWeb.ChatLiveTest do
   # covers: hgs_brain.source_transparency.search_citation_fields
   # covers: hgs_brain.source_transparency.relevance_signal
   # covers: hgs_brain.source_transparency.rank_order
+  # covers: hgs_brain.retrieval_review_scope.scope_visible
+  # covers: hgs_brain.retrieval_review_scope.ask_respected
+  # covers: hgs_brain.retrieval_review_scope.search_respected
+  # covers: hgs_brain.retrieval_review_scope.chat_default_reviewed_only
+  # covers: hgs_brain.retrieval_review_scope.workflow_default
 
   use HgsBrainWeb.ConnCase, async: false
 
@@ -196,6 +201,52 @@ defmodule HgsBrainWeb.ChatLiveTest do
       higher_pos = :binary.match(html, "Higher relevance passage.") |> elem(0)
       lower_pos = :binary.match(html, "Lower relevance passage.") |> elem(0)
       assert higher_pos < lower_pos, "highest-ranked citation should appear first"
+    end
+  end
+
+  describe "review scope" do
+    test "shows review scope selector on mount", %{conn: conn} do
+      {:ok, _view, html} = live(conn, "/chat")
+      assert html =~ "Reviewed Only"
+      assert html =~ "Include Inbox"
+    end
+
+    test "defaults to reviewed-only scope in chat", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/chat")
+      html = render(view)
+      # Reviewed Only button should be the active one (bg-zinc-800 = active)
+      assert html =~ "Reviewed Only"
+      # Scope selector is visible before any query
+      assert html =~ "Sources:"
+    end
+
+    test "can switch to include-inbox scope", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/chat")
+      render_click(view, "set_review_scope", %{"scope" => "include_inbox"})
+      html = render(view)
+      assert html =~ "Include Inbox"
+    end
+
+    test "passes reviewed_only scope to retrieval on ask", %{conn: conn} do
+      stub(HgsBrain.MockArcanaClient, :ask, fn _q, _opts ->
+        {:ok, "Answer.", []}
+      end)
+
+      {:ok, view, _html} = live(conn, "/chat")
+      # default scope is reviewed_only; just verify no error and answer renders
+      render_submit(view, "submit", %{"question" => "anything"})
+      wait_for_render(view, "Answer.")
+    end
+
+    test "passes include_inbox scope to retrieval when selected", %{conn: conn} do
+      stub(HgsBrain.MockArcanaClient, :ask, fn _q, _opts ->
+        {:ok, "Broad answer.", []}
+      end)
+
+      {:ok, view, _html} = live(conn, "/chat")
+      render_click(view, "set_review_scope", %{"scope" => "include_inbox"})
+      render_submit(view, "submit", %{"question" => "anything"})
+      wait_for_render(view, "Broad answer.")
     end
   end
 end

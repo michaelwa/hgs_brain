@@ -6,7 +6,7 @@ Present source metadata in search mode using the same citation format as ask mod
 id: hgs_brain.source_transparency.search_consistency
 kind: feature
 status: active
-summary: Search mode results display source metadata, excerpt text, segment visibility, and rank using the same citation card structure as ask-mode citations, giving users a uniform inspection experience across both modes.
+summary: Search mode results display source metadata, excerpt text, segment visibility, and rank using the same citation card structure as ask-mode citations, giving users a uniform inspection experience across both modes. Both modes apply the same review scope filtering.
 surface:
   - lib/hgs_brain_web/live/chat_live.ex
 ```

@@ -6,7 +6,7 @@ Low-friction capture flow for new knowledge before full organization.
 id: hgs_brain.capture_inbox
 kind: feature
 status: active
-summary: The system allows users to create lightweight captures that enter an inbox state with source-level metadata preserved while remaining available to downstream retrieval workflows. Captures normalize through the KnowledgeSource contract before ingestion.
+summary: The system allows users to create lightweight captures that enter an inbox state with source-level metadata preserved while remaining available to downstream retrieval workflows. Captures normalize through the KnowledgeSource contract before ingestion and expose review state metadata so retrieval workflows can apply review-scope filtering.
 surface:
   - lib/hgs_brain
   - lib/hgs_brain_web

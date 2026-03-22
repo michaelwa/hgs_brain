@@ -6,7 +6,7 @@ Clearly communicate when an answer has no supporting evidence.
 id: hgs_brain.source_transparency.weak_grounding
 kind: feature
 status: active
-summary: When ask mode produces an answer without any retrieved supporting passages, the UI presents a clear weak-grounding state instead of implying the answer is well supported.
+summary: When ask mode produces an answer without any retrieved supporting passages (including when all passages are filtered by review scope), the UI presents a clear weak-grounding state instead of implying the answer is well supported.
 surface:
   - lib/hgs_brain_web/live/chat_live.ex
 ```

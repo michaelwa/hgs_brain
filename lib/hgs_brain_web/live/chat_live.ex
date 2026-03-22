@@ -11,6 +11,11 @@ defmodule HgsBrainWeb.ChatLive do
   # <!-- covers: hgs_brain.source_transparency.empty_citations -->
   # <!-- covers: hgs_brain.source_transparency.search_consistency -->
   # <!-- covers: hgs_brain.source_transparency.relevance_signal -->
+  # <!-- covers: hgs_brain.retrieval_review_scope.scope_visible -->
+  # <!-- covers: hgs_brain.retrieval_review_scope.ask_respected -->
+  # <!-- covers: hgs_brain.retrieval_review_scope.search_respected -->
+  # <!-- covers: hgs_brain.retrieval_review_scope.chat_default_reviewed_only -->
+  # <!-- covers: hgs_brain.retrieval_review_scope.workflow_default -->
 
   alias HgsBrain.Retrieval
 
@@ -20,6 +25,7 @@ defmodule HgsBrainWeb.ChatLive do
      assign(socket,
        segment: :personal,
        mode: :ask,
+       review_scope: :reviewed_only,
        question: "",
        answer: nil,
        sources: [],
@@ -52,8 +58,19 @@ defmodule HgsBrainWeb.ChatLive do
      )}
   end
 
+  def handle_event("set_review_scope", %{"scope" => scope}, socket) do
+    {:noreply,
+     assign(socket,
+       review_scope: String.to_existing_atom(scope),
+       answer: nil,
+       sources: [],
+       results: [],
+       error: nil
+     )}
+  end
+
   def handle_event("submit", %{"question" => question}, socket) when byte_size(question) > 0 do
-    %{mode: mode, segment: segment} = socket.assigns
+    %{mode: mode, segment: segment, review_scope: review_scope} = socket.assigns
 
     socket =
       assign(socket,
@@ -68,8 +85,8 @@ defmodule HgsBrainWeb.ChatLive do
     {:noreply,
      start_async(socket, :query, fn ->
        case mode do
-         :ask -> Retrieval.ask(question, segment)
-         :search -> {:search, Retrieval.search(question, segment)}
+         :ask -> Retrieval.ask(question, segment, review_scope: review_scope)
+         :search -> {:search, Retrieval.search(question, segment, review_scope: review_scope)}
        end
      end)}
   end
@@ -159,6 +176,37 @@ defmodule HgsBrainWeb.ChatLive do
             Search
           </button>
         </div>
+      </div>
+
+      <%!-- Review scope selector --%>
+      <div class="flex items-center gap-2 text-sm">
+        <span class="text-zinc-400">Sources:</span>
+        <button
+          phx-click="set_review_scope"
+          phx-value-scope="reviewed_only"
+          class={[
+            "px-3 py-1 rounded-full text-xs font-medium transition-colors",
+            if(@review_scope == :reviewed_only,
+              do: "bg-zinc-800 text-white",
+              else: "bg-zinc-100 text-zinc-500 hover:bg-zinc-200"
+            )
+          ]}
+        >
+          Reviewed Only
+        </button>
+        <button
+          phx-click="set_review_scope"
+          phx-value-scope="include_inbox"
+          class={[
+            "px-3 py-1 rounded-full text-xs font-medium transition-colors",
+            if(@review_scope == :include_inbox,
+              do: "bg-zinc-800 text-white",
+              else: "bg-zinc-100 text-zinc-500 hover:bg-zinc-200"
+            )
+          ]}
+        >
+          Include Inbox
+        </button>
       </div>
 
       <%!-- Query form --%>

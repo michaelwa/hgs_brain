@@ -6,7 +6,7 @@ Render supporting citations beneath each answer in ask mode.
 id: hgs_brain.source_transparency.citation_ui
 kind: feature
 status: active
-summary: The chat UI displays a Sources list beneath each AI-generated answer, showing source identity, segment, excerpt, and ordinal rank for each supporting passage.
+summary: The chat UI displays a Sources list beneath each AI-generated answer, showing source identity, segment, excerpt, and ordinal rank for each supporting passage. Displayed sources reflect the active review scope selected by the user.
 surface:
   - lib/hgs_brain_web/live/chat_live.ex
 ```

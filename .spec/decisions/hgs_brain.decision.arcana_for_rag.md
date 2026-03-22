@@ -8,6 +8,7 @@ affects:
   - hgs_brain.retrieval
   - hgs_brain.capture_inbox
   - hgs_brain.knowledge_source_ingestion
+  - hgs_brain.retrieval_review_scope
 ---
 
 # Use Arcana for RAG

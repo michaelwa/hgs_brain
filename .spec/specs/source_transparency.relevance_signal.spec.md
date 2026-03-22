@@ -6,7 +6,7 @@ Expose citation strength using a stable rank indicator.
 id: hgs_brain.source_transparency.relevance_signal
 kind: feature
 status: active
-summary: Each supporting citation carries a lightweight relevance signal expressed as retrieval rank so users can judge how strongly a passage supported the answer without interpreting raw similarity scores.
+summary: Each supporting citation carries a lightweight relevance signal expressed as retrieval rank so users can judge how strongly a passage supported the answer without interpreting raw similarity scores. Rank reflects the post-review-scope filtered result set.
 surface:
   - lib/hgs_brain/retrieval.ex
   - lib/hgs_brain_web/live/chat_live.ex
