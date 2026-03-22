@@ -6,7 +6,7 @@ Control whether retrieval includes inbox captures or only reviewed knowledge.
 id: hgs_brain.retrieval_review_scope
 kind: feature
 status: active
-summary: The system allows users to control whether retrieval workflows include inbox captures or restrict results to reviewed knowledge, applies that scope consistently across ask and search flows, and supports workflow-specific default review scopes.
+summary: The system allows users to control whether retrieval workflows include inbox captures or restrict results to reviewed knowledge, applies that scope consistently across ask, search, and review-resurfacing flows, and supports workflow-specific default review scopes.
 surface:
   - lib/hgs_brain/retrieval.ex
   - lib/hgs_brain_web/live/chat_live.ex

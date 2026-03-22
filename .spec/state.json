@@ -8,7 +8,8 @@
           "hgs_brain.retrieval",
           "hgs_brain.capture_inbox",
           "hgs_brain.knowledge_source_ingestion",
-          "hgs_brain.retrieval_review_scope"
+          "hgs_brain.retrieval_review_scope",
+          "hgs_brain.review_resurfacing"
         ],
         "date": "2026-03-21",
         "file": ".spec/decisions/hgs_brain.decision.arcana_for_rag.md",
@@ -490,6 +491,54 @@
         "subject_id": "hgs_brain.retrieval_review_scope"
       },
       {
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "id": "hgs_brain.review_resurfacing.defer_supported",
+        "priority": "should",
+        "stability": "evolving",
+        "statement": "The system shall allow the user to save a resurfaced item for later review.",
+        "subject_id": "hgs_brain.review_resurfacing"
+      },
+      {
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "id": "hgs_brain.review_resurfacing.dismiss_supported",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "The system shall allow the user to dismiss a resurfaced item from the current review context.",
+        "subject_id": "hgs_brain.review_resurfacing"
+      },
+      {
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "id": "hgs_brain.review_resurfacing.recent_items",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "The system shall surface recently added knowledge items for review.",
+        "subject_id": "hgs_brain.review_resurfacing"
+      },
+      {
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "id": "hgs_brain.review_resurfacing.related_items",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "The system shall surface knowledge items related to the user's current context, such as an active capture, note, or query.",
+        "subject_id": "hgs_brain.review_resurfacing"
+      },
+      {
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "id": "hgs_brain.review_resurfacing.revisit_items",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "The system shall surface older knowledge items worth revisiting.",
+        "subject_id": "hgs_brain.review_resurfacing"
+      },
+      {
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "id": "hgs_brain.review_resurfacing.source_state_visible",
+        "priority": "must",
+        "stability": "evolving",
+        "statement": "Resurfaced items shall preserve enough source-level state and metadata for the user to understand why the item is being shown.",
+        "subject_id": "hgs_brain.review_resurfacing"
+      },
+      {
         "file": ".spec/specs/source_transparency.citation_ui.spec.md",
         "id": "hgs_brain.source_transparency.answer_citations",
         "priority": "must",
@@ -953,6 +1002,77 @@
       },
       {
         "covers": [
+          "hgs_brain.review_resurfacing.dismiss_supported",
+          "hgs_brain.review_resurfacing.defer_supported"
+        ],
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "given": [
+          "A resurfaced item is shown to the user"
+        ],
+        "id": "hgs_brain.review_resurfacing.dismiss_or_defer",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "then": [
+          "The review context reflects the user's action"
+        ],
+        "when": [
+          "The user dismisses it or saves it for later review"
+        ]
+      },
+      {
+        "covers": [
+          "hgs_brain.review_resurfacing.recent_items",
+          "hgs_brain.review_resurfacing.source_state_visible"
+        ],
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "given": [
+          "Knowledge items have been added recently"
+        ],
+        "id": "hgs_brain.review_resurfacing.recent_knowledge_available",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "then": [
+          "Recent items are available for inspection with enough metadata to understand their source and state"
+        ],
+        "when": [
+          "The user enters a review-oriented workflow"
+        ]
+      },
+      {
+        "covers": [
+          "hgs_brain.review_resurfacing.related_items",
+          "hgs_brain.review_resurfacing.source_state_visible"
+        ],
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "given": [
+          "The user is viewing or refining an active capture, note, or query"
+        ],
+        "id": "hgs_brain.review_resurfacing.related_context_available",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "then": [
+          "Related items are available with enough metadata to understand their relationship to the current context"
+        ],
+        "when": [
+          "Related knowledge is requested or surfaced"
+        ]
+      },
+      {
+        "covers": [
+          "hgs_brain.review_resurfacing.revisit_items"
+        ],
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "given": [
+          "Older knowledge items exist in the system"
+        ],
+        "id": "hgs_brain.review_resurfacing.revisit_older_knowledge",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "then": [
+          "Older items are available for review even without an explicit query"
+        ],
+        "when": [
+          "The system surfaces revisit-worthy knowledge"
+        ]
+      },
+      {
+        "covers": [
           "hgs_brain.source_transparency.answer_citations",
           "hgs_brain.source_transparency.segment_visibility",
           "hgs_brain.source_transparency.citation_fields"
@@ -1042,7 +1162,7 @@
           "id": "hgs_brain.capture_inbox",
           "kind": "feature",
           "status": "active",
-          "summary": "The system allows users to create lightweight captures that enter an inbox state with source-level metadata preserved while remaining available to downstream retrieval workflows. Captures normalize through the KnowledgeSource contract before ingestion and expose review state metadata so retrieval workflows can apply review-scope filtering.",
+          "summary": "The system allows users to create lightweight captures that enter an inbox state with source-level metadata preserved while remaining available to downstream retrieval and review-resurfacing workflows. Captures normalize through the KnowledgeSource contract before ingestion and expose review state metadata so retrieval and resurfacing workflows can apply review-scope filtering and resurface captures by recency or relevance.",
           "surface": [
             "lib/hgs_brain",
             "lib/hgs_brain_web"
@@ -1142,7 +1262,7 @@
           "id": "hgs_brain.knowledge_source_ingestion",
           "kind": "feature",
           "status": "active",
-          "summary": "The system accepts multiple knowledge-source types and normalizes them into a common ingestion pipeline so source metadata, downstream chunking, retrieval eligibility, and review-state tracking remain consistent across source origins.",
+          "summary": "The system accepts multiple knowledge-source types and normalizes them into a common ingestion pipeline so source metadata, downstream chunking, retrieval eligibility, review-state tracking, and review-resurfacing eligibility remain consistent across source origins.",
           "surface": [
             "lib/hgs_brain/ingestion.ex",
             "lib/hgs_brain",
@@ -1165,7 +1285,7 @@
           "id": "hgs_brain",
           "kind": "package",
           "status": "active",
-          "summary": "Personal Phoenix LiveView second brain that normalizes multiple source types (markdown files, captures) through a unified KnowledgeSource contract, tracks ingestion health, answers natural language questions scoped to a work or personal segment, surfaces grounded citations for every response, and supports review-scope filtering so users can restrict retrieval to reviewed knowledge or include inbox captures.",
+          "summary": "Personal Phoenix LiveView second brain that normalizes multiple source types (markdown files, captures) through a unified KnowledgeSource contract, tracks ingestion health, answers natural language questions scoped to a work or personal segment, surfaces grounded citations for every response, supports review-scope filtering, and resurfaces recent, related, and revisit-worthy knowledge items for review without requiring explicit queries.",
           "surface": [
             "mix.exs",
             "lib/hgs_brain",
@@ -1203,7 +1323,7 @@
           "id": "hgs_brain.retrieval_review_scope",
           "kind": "feature",
           "status": "active",
-          "summary": "The system allows users to control whether retrieval workflows include inbox captures or restrict results to reviewed knowledge, applies that scope consistently across ask and search flows, and supports workflow-specific default review scopes.",
+          "summary": "The system allows users to control whether retrieval workflows include inbox captures or restrict results to reviewed knowledge, applies that scope consistently across ask, search, and review-resurfacing flows, and supports workflow-specific default review scopes.",
           "surface": [
             "lib/hgs_brain/retrieval.ex",
             "lib/hgs_brain_web/live/chat_live.ex",
@@ -1212,6 +1332,23 @@
           "verification_minimum_strength": null
         },
         "title": "Retrieval Review Scope"
+      },
+      {
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "id": "hgs_brain.review_resurfacing",
+        "meta": {
+          "decisions": null,
+          "id": "hgs_brain.review_resurfacing",
+          "kind": "feature",
+          "status": "active",
+          "summary": "The system resurfaces recent, related, and revisit-worthy knowledge items so users can review and refine their second brain without relying only on explicit ask or search workflows.",
+          "surface": [
+            "lib/hgs_brain",
+            "lib/hgs_brain_web"
+          ],
+          "verification_minimum_strength": null
+        },
+        "title": "Review Resurfacing"
       },
       {
         "file": ".spec/specs/source_transparency.citation_ui.spec.md",
@@ -1642,6 +1779,47 @@
       },
       {
         "covers": [
+          "hgs_brain.review_resurfacing.recent_items",
+          "hgs_brain.review_resurfacing.related_items",
+          "hgs_brain.review_resurfacing.revisit_items",
+          "hgs_brain.review_resurfacing.source_state_visible"
+        ],
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "source_file",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "lib/hgs_brain/resurfacing.ex"
+      },
+      {
+        "covers": [
+          "hgs_brain.review_resurfacing.recent_items",
+          "hgs_brain.review_resurfacing.related_items",
+          "hgs_brain.review_resurfacing.revisit_items",
+          "hgs_brain.review_resurfacing.dismiss_supported",
+          "hgs_brain.review_resurfacing.defer_supported",
+          "hgs_brain.review_resurfacing.source_state_visible"
+        ],
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "source_file",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "lib/hgs_brain_web/live/review_live.ex"
+      },
+      {
+        "covers": [
+          "hgs_brain.review_resurfacing.recent_items",
+          "hgs_brain.review_resurfacing.related_items",
+          "hgs_brain.review_resurfacing.revisit_items",
+          "hgs_brain.review_resurfacing.dismiss_supported",
+          "hgs_brain.review_resurfacing.defer_supported",
+          "hgs_brain.review_resurfacing.source_state_visible"
+        ],
+        "execute": true,
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "command",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "mix test test/hgs_brain/resurfacing_test.exs test/hgs_brain_web/live/review_live_test.exs"
+      },
+      {
+        "covers": [
           "hgs_brain.source_transparency.answer_citations",
           "hgs_brain.source_transparency.segment_visibility",
           "hgs_brain.source_transparency.citation_fields"
@@ -1773,10 +1951,10 @@
     "decisions": 4,
     "exceptions": 2,
     "findings": 0,
-    "requirements": 68,
-    "scenarios": 21,
-    "subjects": 15,
-    "verifications": 35
+    "requirements": 74,
+    "scenarios": 25,
+    "subjects": 16,
+    "verifications": 38
   },
   "verification": {
     "claims": [
@@ -3233,6 +3411,182 @@
         "verification_index": 2
       },
       {
+        "cover_id": "hgs_brain.review_resurfacing.recent_items",
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "lib/hgs_brain/resurfacing.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.review_resurfacing.related_items",
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "lib/hgs_brain/resurfacing.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.review_resurfacing.revisit_items",
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "lib/hgs_brain/resurfacing.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.review_resurfacing.source_state_visible",
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "lib/hgs_brain/resurfacing.ex",
+        "verification_index": 0
+      },
+      {
+        "cover_id": "hgs_brain.review_resurfacing.defer_supported",
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "lib/hgs_brain_web/live/review_live.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.review_resurfacing.dismiss_supported",
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "lib/hgs_brain_web/live/review_live.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.review_resurfacing.recent_items",
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "lib/hgs_brain_web/live/review_live.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.review_resurfacing.related_items",
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "lib/hgs_brain_web/live/review_live.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.review_resurfacing.revisit_items",
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "lib/hgs_brain_web/live/review_live.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.review_resurfacing.source_state_visible",
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "source_file",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "linked",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "lib/hgs_brain_web/live/review_live.ex",
+        "verification_index": 1
+      },
+      {
+        "cover_id": "hgs_brain.review_resurfacing.defer_supported",
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "mix test test/hgs_brain/resurfacing_test.exs test/hgs_brain_web/live/review_live_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.review_resurfacing.dismiss_supported",
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "mix test test/hgs_brain/resurfacing_test.exs test/hgs_brain_web/live/review_live_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.review_resurfacing.recent_items",
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "mix test test/hgs_brain/resurfacing_test.exs test/hgs_brain_web/live/review_live_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.review_resurfacing.related_items",
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "mix test test/hgs_brain/resurfacing_test.exs test/hgs_brain_web/live/review_live_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.review_resurfacing.revisit_items",
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "mix test test/hgs_brain/resurfacing_test.exs test/hgs_brain_web/live/review_live_test.exs",
+        "verification_index": 2
+      },
+      {
+        "cover_id": "hgs_brain.review_resurfacing.source_state_visible",
+        "file": ".spec/specs/review_resurfacing.spec.md",
+        "kind": "command",
+        "meets_minimum": true,
+        "required_strength": "claimed",
+        "strength": "executed",
+        "subject_id": "hgs_brain.review_resurfacing",
+        "target": "mix test test/hgs_brain/resurfacing_test.exs test/hgs_brain_web/live/review_live_test.exs",
+        "verification_index": 2
+      },
+      {
         "cover_id": "hgs_brain.source_transparency.answer_citations",
         "file": ".spec/specs/source_transparency.citation_ui.spec.md",
         "kind": "command",
@@ -3490,13 +3844,13 @@
     "default_minimum_strength": "claimed",
     "strength_summary": {
       "claimed": 2,
-      "executed": 62,
-      "linked": 91
+      "executed": 68,
+      "linked": 101
     },
     "threshold_failures": 0
   },
   "workspace": {
     "decision_count": 4,
-    "spec_count": 15
+    "spec_count": 16
   }
 }

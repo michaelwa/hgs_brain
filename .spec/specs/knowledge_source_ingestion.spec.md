@@ -6,7 +6,7 @@ Unified ingestion contract for multiple knowledge-source types.
 id: hgs_brain.knowledge_source_ingestion
 kind: feature
 status: active
-summary: The system accepts multiple knowledge-source types and normalizes them into a common ingestion pipeline so source metadata, downstream chunking, retrieval eligibility, and review-state tracking remain consistent across source origins.
+summary: The system accepts multiple knowledge-source types and normalizes them into a common ingestion pipeline so source metadata, downstream chunking, retrieval eligibility, review-state tracking, and review-resurfacing eligibility remain consistent across source origins.
 surface:
   - lib/hgs_brain/ingestion.ex
   - lib/hgs_brain

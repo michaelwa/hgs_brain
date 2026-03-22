@@ -20,6 +20,7 @@ defmodule HgsBrainWeb.Router do
     get "/", PageController, :home
     live "/chat", ChatLive
     live "/inbox", CaptureInboxLive
+    live "/review", ReviewLive
   end
 
   # Other scopes may use custom stacks.
