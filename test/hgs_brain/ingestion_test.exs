@@ -3,12 +3,18 @@ defmodule HgsBrain.IngestionTest do
   # covers: hgs_brain.ingestion.segment_tagged
   # covers: hgs_brain.ingestion.embedded
   # covers: hgs_brain.ingestion.idempotent
+  # covers: hgs_brain.ingestion_health.status_recorded
+  # covers: hgs_brain.ingestion_health.last_successful_ingestion
+  # covers: hgs_brain.ingestion_health.failures_visible
+  # covers: hgs_brain.ingestion_health.source_change_detected
+  # covers: hgs_brain.ingestion_health.reprocessing_supported
 
   use HgsBrain.DataCase, async: true
 
   import Mox
 
   alias HgsBrain.Ingestion
+  alias HgsBrain.IngestionRecord
   alias HgsBrain.Repo
 
   setup :verify_on_exit!
@@ -120,6 +126,101 @@ defmodule HgsBrain.IngestionTest do
       end)
 
       assert :ok = Ingestion.delete_document(doc_id)
+    end
+  end
+
+  describe "ingestion health" do
+    setup do
+      path = Path.join(System.tmp_dir!(), "hgs_brain_test_#{System.unique_integer()}.md")
+      File.write!(path, "# Test\n\nSome content.")
+      on_exit(fn -> File.rm(path) end)
+      %{path: path}
+    end
+
+    test "records ok status after successful ingestion", %{path: path} do
+      expect(HgsBrain.MockArcanaClient, :ingest_file, fn _path, _opts ->
+        {:ok, %{id: Ecto.UUID.generate()}}
+      end)
+
+      assert {:ok, _} = Ingestion.ingest_file(path, :personal)
+
+      record = Ingestion.ingestion_health(path, :personal)
+      assert record.status == :ok
+      assert record.error_reason == nil
+    end
+
+    test "records ingested_at timestamp after successful ingestion", %{path: path} do
+      before = DateTime.utc_now() |> DateTime.truncate(:second)
+
+      expect(HgsBrain.MockArcanaClient, :ingest_file, fn _path, _opts ->
+        {:ok, %{id: Ecto.UUID.generate()}}
+      end)
+
+      Ingestion.ingest_file(path, :personal)
+
+      record = Ingestion.ingestion_health(path, :personal)
+      assert DateTime.compare(record.ingested_at, before) in [:gt, :eq]
+    end
+
+    test "records error status and reason after failed ingestion", %{path: path} do
+      expect(HgsBrain.MockArcanaClient, :ingest_file, fn _path, _opts ->
+        {:error, :parse_failed}
+      end)
+
+      assert {:error, :parse_failed} = Ingestion.ingest_file(path, :personal)
+
+      record = Ingestion.ingestion_health(path, :personal)
+      assert record.status == :error
+      assert record.error_reason =~ "parse_failed"
+    end
+
+    test "source_changed? returns false when file unchanged since last successful ingestion",
+         %{path: path} do
+      expect(HgsBrain.MockArcanaClient, :ingest_file, fn _path, _opts ->
+        {:ok, %{id: Ecto.UUID.generate()}}
+      end)
+
+      Ingestion.ingest_file(path, :personal)
+
+      refute Ingestion.source_changed?(path, :personal)
+    end
+
+    test "source_changed? returns true when file content changes after ingestion", %{path: path} do
+      expect(HgsBrain.MockArcanaClient, :ingest_file, fn _path, _opts ->
+        {:ok, %{id: Ecto.UUID.generate()}}
+      end)
+
+      Ingestion.ingest_file(path, :personal)
+
+      File.write!(path, "# Updated\n\nDifferent content.")
+
+      assert Ingestion.source_changed?(path, :personal)
+    end
+
+    test "source_changed? returns true when no health record exists", %{path: path} do
+      assert Ingestion.source_changed?(path, :personal)
+    end
+
+    test "updates health record on reprocessing after failure", %{path: path} do
+      expect(HgsBrain.MockArcanaClient, :ingest_file, fn _path, _opts ->
+        {:ok, %{id: Ecto.UUID.generate()}}
+      end)
+
+      # Simulate a failed prior health record
+      Repo.insert!(%IngestionRecord{
+        file_path: path,
+        segment: "personal",
+        status: :error,
+        error_reason: "prior failure"
+      })
+
+      assert Ingestion.source_changed?(path, :personal)
+
+      Ingestion.ingest_file(path, :personal)
+
+      record = Ingestion.ingestion_health(path, :personal)
+      assert record.status == :ok
+      refute Ingestion.source_changed?(path, :personal)
     end
   end
 end

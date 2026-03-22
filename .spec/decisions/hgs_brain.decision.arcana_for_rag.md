@@ -4,6 +4,7 @@ status: accepted
 date: 2026-03-21
 affects:
   - hgs_brain.ingestion
+  - hgs_brain.ingestion_health
   - hgs_brain.retrieval
 ---
 
